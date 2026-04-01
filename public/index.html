@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Executive Allure | Private Access</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
@@ -44,6 +47,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Full‑screen background image (aerial landscape) – now using public Unsplash */
     .bg-scene {
       position: fixed;
       top: 0;
@@ -57,6 +61,7 @@
       background-repeat: no-repeat;
     }
 
+    /* Blur overlay – creates glass effect */
     .bg-blur {
       position: fixed;
       top: 0;
@@ -68,6 +73,7 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
+    /* Subtle dark gradient for text readability */
     .bg-tint {
       position: fixed;
       top: 0;
@@ -75,16 +81,16 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
       pointer-events: none;
     }
 
     .glass-card {
       background: rgba(255, 255, 255, 0.7);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,245,0.3);
+      border: 1px solid rgba(255, 255, 245, 0.3);
       border-radius: 2rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     ::-webkit-scrollbar { width: 8px; }
@@ -101,17 +107,17 @@
       transform: scale(1.02);
       background: #f8fafc;
       border-color: #6366f1;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
     .social-link-card {
       transition: all 0.2s ease;
     }
     .social-link-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 20px -8px rgba(0,0,0,0.15);
+      box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
     }
     .modal-overlay {
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
     .btn-primary {
@@ -120,7 +126,7 @@
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px -5px rgba(99,102,241,0.4);
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
     }
     .tabs-container {
       display: flex;
@@ -135,12 +141,13 @@
       background: white;
       color: #6366f1;
       border-bottom: 2px solid #6366f1;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
   </style>
 </head>
+
 <body>
-  <!-- Background layers -->
+  <!-- Background layers – blurry glass landscape -->
   <div class="bg-scene"></div>
   <div class="bg-blur"></div>
   <div class="bg-tint"></div>
@@ -150,12 +157,12 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // ========== CONFIGURATION – CHANGE THIS ==========
+    // ========== CONFIGURATION ==========
     const SUPPORT_EMAIL = "edithkeller44@hotmail.com";
     const APPROVED_JSON_URL = "approved.json";
 
-    // ========== IMAGES – SEPARATE FOR FIRST PAGE AND DASHBOARD ==========
-    const PROFILE_IMAGE = "https://placehold.co/400x400/6366f1/white?text=CAPTAIN&font=montserrat";
+    // ========== IMAGES ==========
+    const PROFILE_IMAGE = "img/dp0.jpg";        // Your personal profile picture
     const COCKPIT_BANNER = "https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=1200&h=500&fit=crop";
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
@@ -242,7 +249,7 @@
             <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 z-10">
               <i className="fas fa-times text-xl"></i>
             </button>
-            
+
             <div className="text-center mb-4">
               <i className={`${link.icon} text-4xl ${paymentMethod.color} mb-2`}></i>
               <h3 className="text-xl md:text-2xl font-bold text-gray-800 mt-1">Unlock {link.name}</h3>
@@ -304,7 +311,7 @@
                   </div>
                 </li>
                 <li>Take a screenshot of payment confirmation.</li>
-                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br/>Device ID, screenshot, and link name (<strong>{link.name}</strong>).</li>
+                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br />Device ID, screenshot, and link name (<strong>{link.name}</strong>).</li>
                 <li>Approval within <strong>12 hours</strong>.</li>
               </ol>
             </div>
@@ -330,9 +337,8 @@
         return () => clearTimeout(timer);
       }, [onClose]);
       return (
-        <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm ${
-          type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`}>
+        <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+          }`}>
           <i className={`fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
           {message}
         </div>
@@ -403,7 +409,7 @@
       }
 
       return (
-        <div className="min-h-screen">   {/* Removed py-4 */}
+        <div className="min-h-screen">
           {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
           {showPaymentModal && selectedLink && (
             <PaymentModal
@@ -434,11 +440,23 @@
           </div>
 
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Welcome Banner with cockpit image */}
-            <div className="relative rounded-3xl overflow-hidden mb-12 shadow-lg bg-white/50 backdrop-blur-sm">
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/30 to-transparent z-10"></div>
+            {/* Welcome Banner with cockpit image and profile overlay at center-bottom */}
+            <div className="relative rounded-3xl overflow-hidden mb-12 shadow-lg">
               <img src={COCKPIT_BANNER} className="w-full h-56 md:h-80 object-cover" alt="Cockpit" />
-              <div className="absolute bottom-6 left-6 z-20">
+
+              {/* Profile image overlay – centered at bottom */}
+              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white/10 backdrop-blur-sm">
+                  <img
+                    src={PROFILE_IMAGE}
+                    alt="Captain"
+                    className="w-full h-full object-cover object-[center_5%]"
+                  />
+                </div>
+              </div>
+
+              {/* Text overlay – placed at bottom-left */}
+              <div className="absolute bottom-6 left-6 z-10 bg-black/40 backdrop-blur-sm rounded-lg px-4 py-2">
                 <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">Welcome Aboard!</h2>
                 <p className="text-indigo-100 flex gap-2 items-center mt-1">
                   <i className="fas fa-link text-indigo-300"></i> Click any link below to unlock
@@ -456,11 +474,10 @@
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`tab-button flex items-center gap-2 px-6 py-3 rounded-t-2xl text-md font-semibold transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? "bg-white/80 text-indigo-600 border-b-2 border-indigo-500 shadow-sm"
-                      : "bg-white/50 text-gray-500 hover:text-gray-700 hover:bg-white/70"
-                  }`}
+                  className={`tab-button flex items-center gap-2 px-6 py-3 rounded-t-2xl text-md font-semibold transition-all duration-200 ${activeTab === tab.id
+                    ? "bg-white/80 text-indigo-600 border-b-2 border-indigo-500 shadow-sm"
+                    : "bg-white/50 text-gray-500 hover:text-gray-700 hover:bg-white/70"
+                    }`}
                 >
                   <i className={tab.icon}></i> {tab.label}
                 </button>
@@ -484,11 +501,10 @@
                         <div
                           key={link.id}
                           onClick={() => handleLinkClick(link)}
-                          className={`social-link-card group flex items-center gap-4 p-4 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer ${
-                            isUnlocked
-                              ? 'border-green-300 bg-green-50/70 hover:border-green-400'
-                              : 'border-gray-200 bg-white/70 hover:border-indigo-300 hover:shadow-md'
-                          }`}
+                          className={`social-link-card group flex items-center gap-4 p-4 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer ${isUnlocked
+                            ? 'border-green-300 bg-green-50/70 hover:border-green-400'
+                            : 'border-gray-200 bg-white/70 hover:border-indigo-300 hover:shadow-md'
+                            }`}
                         >
                           <i className={`${link.icon} text-3xl ${isUnlocked ? 'text-green-500' : 'text-indigo-500'} group-hover:scale-110 transition`}></i>
                           <div className="flex-1">
@@ -651,12 +667,16 @@
       return (
         <>
           {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
-          <div className="min-h-screen flex items-center justify-center px-6 py-16 md:py-24">
+          <div className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16 md:py-24">
             <div className="max-w-4xl w-full glass-card p-8 md:p-12 fade-up">
               <div className="flex flex-col items-center text-center">
-                <div className="relative mb-6">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-indigo-400 shadow-xl overflow-hidden">
-                    <img src={PROFILE_IMAGE} alt="Executive Allure" className="w-full h-full object-cover" />
+                <div className="relative mb-8 mt-4">
+                  <div className="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-indigo-400 shadow-xl overflow-hidden bg-gray-200">
+                    <img
+                      src={PROFILE_IMAGE}
+                      alt="Executive Allure"
+                      className="w-full h-full object-cover object-[center_5%]"
+                    />
                   </div>
                   <div className="absolute -bottom-2 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
                     ✈️ OFFICIAL
@@ -665,7 +685,7 @@
                 <h1 className="text-4xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
                   Executive Allure
                 </h1>
-                <p className="text-gray-600 text-lg mt-2">World‑class airline pilot | Podcaster | AvGeek</p>
+                <p className="text-gray-600 text-lg mt-2">World‑class airline pilot | Getfull access | Chat with me</p>
               </div>
 
               <div className="mt-12 border-t border-gray-200 pt-8">
@@ -706,4 +726,5 @@
     ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
 </body>
+
 </html>
