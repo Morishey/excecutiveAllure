@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Captain's AeroSpace | Premium Pilot Access</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideIn {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes gentlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    @keyframes floatGlow {
+      0% { transform: translateY(0px); opacity: 0.7; }
+      100% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    .fade-up { animation: fadeSlideUp 0.5s ease-out forwards; }
+    .fade-in { animation: fadeSlideIn 0.4s ease-out forwards; }
+    .animate-float { animation: floatGlow 3s infinite alternate ease-in-out; }
+    .animate-pulse-soft { animation: gentlePulse 2s infinite; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e6f0ff 100%);
+      -webkit-tap-highlight-color: transparent;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #eef2ff; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
+
+    .payment-card {
+      transition: all 0.25s ease;
+      cursor: pointer;
+      background: white;
+      border: 1px solid #e2e8f0;
+    }
+    .payment-card:hover {
+      transform: scale(1.02);
+      background: #f8fafc;
+      border-color: #6366f1;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
+    .social-link-card {
+      transition: all 0.2s ease;
+    }
+    .social-link-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -8px rgba(0,0,0,0.15);
+    }
+    .modal-overlay {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(99,102,241,0.4);
+    }
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-button {
+      transition: all 0.2s;
+    }
+    .tab-button.active {
+      background: white;
+      color: #6366f1;
+      border-bottom: 2px solid #6366f1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body class="text-gray-800 m-0">
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ========== CONFIGURATION – CHANGE THIS ==========
+const SUPPORT_EMAIL = "edithkeller44@hotmail.com";   // <-- Replace with your support email
+const APPROVED_JSON_URL = "approved.json";          // Path to your approval JSON file
+
+// ========== IMAGES (replace with your own) ==========
+const PILOT_AVATAR = "https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=400&h=400&fit=crop";
+const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
+
+// ========== PAYMENT METHODS ==========
+const PAYMENT_METHODS = [
+  { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "4.99" },
+  { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "4.99" },
+  { name: "Venmo", icon: "fab fa-venmo", color: "text-indigo-600", tag: "@CaptainPilot", amount: "4.99" }
+];
+
+// ========== SOCIAL LINKS ==========
+const SOCIAL_LINKS = [
+  { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://instagram.com/", actualUsername: "captain_maverick", price: "4.99" },
+  { id: 2, name: "Twitter/X", icon: "fab fa-twitter", url: "https://twitter.com/", actualUsername: "captainjet", price: "4.99" },
+  { id: 3, name: "YouTube", icon: "fab fa-youtube", url: "https://youtube.com/@", actualUsername: "CaptainPilotOfficial", price: "4.99" },
+  { id: 4, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "4.99" },
+  { id: 5, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/", actualUsername: "1234567890", price: "4.99" },
+  { id: 6, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "4.99" }
+];
+
+// ========== PODCAST EPISODES ==========
+const PODCAST_EPISODES = [
+  { title: "✈️ Crosswind Landings Masterclass", duration: "42 min", date: "Mar 2025" },
+  { title: "🛫 Future of Aviation & AI", duration: "58 min", date: "Feb 2025" },
+  { title: "🎙️ Flying Across Atlantic: Stories", duration: "1h 12min", date: "Jan 2025" }
+];
+
+// ---------- Helper: get unique device ID ----------
+const getDeviceId = () => {
+  let id = localStorage.getItem('device_id');
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
+    localStorage.setItem('device_id', id);
+  }
+  return id;
+};
+
+// ---------- Admin Panel ----------
+const AdminPanel = ({ onClose }) => {
+  const deviceId = getDeviceId();
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(deviceId);
+    alert("Device ID copied!");
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative fade-up">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+          <i className="fas fa-times text-xl"></i>
+        </button>
+        <h3 className="text-2xl font-bold text-gray-800 mb-4">Your Device ID</h3>
+        <p className="text-gray-600 text-sm mb-3">Copy this ID and send it to the Captain after paying.</p>
+        <div className="bg-gray-100 p-3 rounded-lg font-mono text-sm break-all mb-4">{deviceId}</div>
+        <button onClick={copyToClipboard} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">
+          Copy Device ID
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Payment Modal (compact, no scrolling) ----------
+const PaymentModal = ({ link, paymentMethod, onClose }) => {
+  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [deviceIdCopied, setDeviceIdCopied] = useState(false);
+  const deviceId = getDeviceId();
+
+  const handleCopyTag = () => {
+    navigator.clipboard.writeText(paymentMethod.tag);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyDeviceId = () => {
+    navigator.clipboard.writeText(deviceId);
+    setDeviceIdCopied(true);
+    setTimeout(() => setDeviceIdCopied(false), 2000);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-5 md:p-6 relative">
+        <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 z-10">
+          <i className="fas fa-times text-xl"></i>
+        </button>
+        
+        <div className="text-center mb-4">
+          <i className={`${link.icon} text-4xl ${paymentMethod.color} mb-2`}></i>
+          <h3 className="text-xl md:text-2xl font-bold text-gray-800 mt-1">Unlock {link.name}</h3>
+          <p className="text-gray-500 text-xs md:text-sm mt-1">Follow the instructions below</p>
+        </div>
+
+        <div className="bg-gray-50 rounded-xl p-3 mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500">Payment Method:</span>
+            <span className="font-semibold flex items-center gap-1 text-sm text-gray-700">
+              <i className={paymentMethod.icon}></i> {paymentMethod.name}
+            </span>
+          </div>
+
+          {!showPaymentDetails ? (
+            <div className="text-center py-2">
+              <button
+                onClick={() => setShowPaymentDetails(true)}
+                className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-1.5 rounded-full text-xs transition"
+              >
+                <i className="fas fa-lock mr-1"></i> Reveal Payment Details
+              </button>
+              <p className="text-xs text-gray-400 mt-2">Payment details are hidden for security</p>
+            </div>
+          ) : (
+            <>
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-2 mb-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Send exactly:</span>
+                  <span className="text-base font-bold text-indigo-600">${link.price}</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-600">To this tag:</span>
+                  <div className="flex items-center gap-1">
+                    <code className="bg-white px-2 py-0.5 rounded text-indigo-700 text-xs border">{paymentMethod.tag}</code>
+                    <button onClick={handleCopyTag} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs transition">
+                      {copied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 text-center">After sending the exact amount, follow the instructions below.</p>
+            </>
+          )}
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
+          <p className="text-xs font-semibold text-amber-800 mb-2">📋 Instructions:</p>
+          <ol className="text-xs text-gray-700 space-y-1.5 list-decimal ml-4">
+            <li>Pay <strong>${link.price}</strong> to the <strong>{paymentMethod.name}</strong> tag above.</li>
+            <li>
+              <span className="font-medium">Copy Device ID:</span>
+              <div className="flex items-center gap-1 mt-0.5">
+                <code className="bg-white px-1.5 py-0.5 rounded text-xs font-mono break-all flex-1">{deviceId}</code>
+                <button onClick={handleCopyDeviceId} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs whitespace-nowrap">
+                  {deviceIdCopied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
+                  {deviceIdCopied ? " Copied" : " Copy"}
+                </button>
+              </div>
+            </li>
+            <li>Take a screenshot of payment confirmation.</li>
+            <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br/>Device ID, screenshot, and link name (<strong>{link.name}</strong>).</li>
+            <li>Approval within <strong>12 hours</strong>.</li>
+          </ol>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 rounded-lg text-sm transition"
+        >
+          Close
+        </button>
+        <p className="text-center text-xs text-gray-500 mt-2">
+          <i className="fas fa-clock mr-1"></i> Thanks for your patience.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Toast Notification ----------
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+  return (
+    <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm ${
+      type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`}>
+      <i className={`fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+      {message}
+    </div>
+  );
+};
+
+// ---------- Dashboard ----------
+const Dashboard = ({ paymentMethod, onLogout }) => {
+  const [activeTab, setActiveTab] = useState("connect");
+  const [unlockedLinks, setUnlockedLinks] = useState([]);
+  const [selectedLink, setSelectedLink] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [loadingApprovals, setLoadingApprovals] = useState(true);
+
+  // Fetch approved devices from JSON
+  const fetchApprovals = async () => {
+    try {
+      const res = await fetch(APPROVED_JSON_URL + "?t=" + Date.now());
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const myId = getDeviceId();
+      const approvedNames = data[myId] || [];
+      const unlockedIds = approvedNames.map(name => SOCIAL_LINKS.find(l => l.name === name)?.id).filter(Boolean);
+      setUnlockedLinks(unlockedIds);
+    } catch (err) {
+      console.warn("Could not fetch approvals, using localStorage fallback.");
+      const saved = localStorage.getItem(`unlocked_links_${paymentMethod.name}`);
+      if (saved) setUnlockedLinks(JSON.parse(saved));
+    } finally {
+      setLoadingApprovals(false);
+    }
+  };
+
+  // Save to localStorage as fallback
+  useEffect(() => {
+    if (!loadingApprovals) {
+      localStorage.setItem(`unlocked_links_${paymentMethod.name}`, JSON.stringify(unlockedLinks));
+    }
+  }, [unlockedLinks, paymentMethod, loadingApprovals]);
+
+  // Poll for changes every 30 seconds
+  useEffect(() => {
+    fetchApprovals();
+    const interval = setInterval(fetchApprovals, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const showToast = (message, type = 'success') => setToast({ message, type });
+
+  const handleLinkClick = (link) => {
+    if (unlockedLinks.includes(link.id)) {
+      const fullUrl = link.url + link.actualUsername;
+      window.open(fullUrl, '_blank');
+      showToast(`✓ Opening ${link.name}...`, 'success');
+    } else {
+      setSelectedLink(link);
+      setShowPaymentModal(true);
+    }
+  };
+
+  if (loadingApprovals) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #e6f0ff 100%)" }}>
+        <div className="text-center">
+          <i className="fas fa-spinner fa-pulse text-4xl text-indigo-500 mb-4"></i>
+          <p className="text-gray-600">Loading your access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #e6f0ff 100%)" }}>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {showPaymentModal && selectedLink && (
+        <PaymentModal
+          link={selectedLink}
+          paymentMethod={paymentMethod}
+          onClose={() => setShowPaymentModal(false)}
+        />
+      )}
+
+      {/* Navbar */}
+      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <i className="fas fa-fighter-jet text-indigo-600 text-2xl animate-float"></i>
+          <span className="font-bold text-xl text-gray-800">Executive Allure</span>
+          <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full hidden md:inline-block">
+            <i className="fas fa-credit-card mr-1"></i> {paymentMethod.name}
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+            <i className="fas fa-unlock-alt mr-1 text-indigo-500"></i>
+            {unlockedLinks.length}/{SOCIAL_LINKS.length} Unlocked
+          </span>
+          <button onClick={onLogout} className="text-sm bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-4 py-2 rounded-full transition flex gap-2 items-center">
+            <i className="fas fa-sign-out-alt"></i> Exit
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+        {/* Welcome Banner */}
+        <div className="relative rounded-3xl overflow-hidden mb-12 shadow-lg bg-white animate-float">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-transparent z-10"></div>
+          <img src={PILOT_AVATAR} className="w-full h-56 md:h-80 object-cover" alt="cockpit" />
+          <div className="absolute bottom-6 left-6 z-20">
+            <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">Welcome Aboard!</h2>
+            <p className="text-indigo-100 flex gap-2 items-center mt-1">
+              <i className="fas fa-link text-indigo-300"></i> Click any link below to unlock
+            </p>
+          </div>
+        </div>
+
+        {/* Centered Tabs */}
+        <div className="tabs-container mb-8">
+          {[
+            { id: "connect", label: "🔗 Social Links", icon: "fas fa-share-alt" },
+            { id: "podcast", label: "🎙️ Podcast Vault", icon: "fas fa-podcast" },
+            { id: "support", label: "💎 Support", icon: "fas fa-gem" }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`tab-button flex items-center gap-2 px-6 py-3 rounded-t-2xl text-md font-semibold transition-all duration-200 ${
+                activeTab === tab.id
+                  ? "bg-white text-indigo-600 border-b-2 border-indigo-500 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <i className={tab.icon}></i> {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="fade-in">
+          {activeTab === "connect" && (
+            <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-2 flex gap-2">
+                <i className="fas fa-hashtag text-indigo-500"></i> Premium Social Links
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Each link costs <span className="text-indigo-600 font-bold">${SOCIAL_LINKS[0]?.price}</span>. Follow the instructions after clicking a link.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {SOCIAL_LINKS.map(link => {
+                  const isUnlocked = unlockedLinks.includes(link.id);
+                  return (
+                    <div
+                      key={link.id}
+                      onClick={() => handleLinkClick(link)}
+                      className={`social-link-card group flex items-center gap-4 p-4 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer ${
+                        isUnlocked
+                          ? 'border-green-300 bg-green-50 hover:border-green-400'
+                          : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-md'
+                      }`}
+                    >
+                      <i className={`${link.icon} text-3xl ${isUnlocked ? 'text-green-500' : 'text-indigo-500'} group-hover:scale-110 transition`}></i>
+                      <div className="flex-1">
+                        <div className="font-bold text-lg text-gray-800 flex items-center gap-2">
+                          {link.name}
+                          {isUnlocked && <i className="fas fa-check-circle text-green-500 text-xs"></i>}
+                        </div>
+                        <div className="text-xs mt-1">
+                          {isUnlocked ? (
+                            <span className="text-green-600">{link.actualUsername}</span>
+                          ) : (
+                            <span className="text-gray-500">
+                              <i className="fas fa-lock mr-1 text-xs"></i> ${link.price} to unlock
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <i className={`fas ${isUnlocked ? 'fa-external-link-alt text-green-500' : 'fa-lock text-gray-400'} ml-auto text-sm`}></i>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-8 pt-4 border-t border-gray-100">
+                <div className="bg-indigo-50 rounded-xl p-4">
+                  <p className="text-sm text-indigo-700 mb-2">
+                    <i className="fas fa-info-circle mr-2"></i> How to unlock:
+                  </p>
+                  <ul className="text-xs text-gray-600 space-y-1 ml-4 list-disc">
+                    <li>Click a locked link to see payment details.</li>
+                    <li>Send the exact amount to the provided tag.</li>
+                    <li>Copy your unique Device ID (displayed in the modal).</li>
+                    <li>Take a screenshot of your payment.</li>
+                    <li>Email both the Device ID and the screenshot to {SUPPORT_EMAIL} with the link name.</li>
+                    <li>Your device will be approved within 12 hours.</li>
+                  </ul>
+                  <p className="text-xs text-gray-500 mt-3">
+                    <i className="fas fa-id-card mr-1"></i> Your Device ID: <span className="font-mono text-xs break-all">{getDeviceId()}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "podcast" && (
+            <div className="space-y-8">
+              <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
+                <div className="flex flex-col md:flex-row gap-6 items-center">
+                  <img src={PODCAST_COVER} alt="podcast" className="w-40 h-40 rounded-2xl shadow-lg object-cover border border-indigo-200" />
+                  <div>
+                    <h3 className="text-3xl font-bold text-gray-800">Cockpit Chronicles Podcast</h3>
+                    <p className="text-gray-600 mt-2">Free for all members! Enjoy exclusive aviation content.</p>
+                    <button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2 rounded-full transition flex items-center gap-2">
+                      <i className="fab fa-spotify"></i> Listen on Spotify
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h4 className="text-xl font-semibold text-gray-800 mb-4">Recent Episodes</h4>
+                <div className="space-y-3">
+                  {PODCAST_EPISODES.map((ep, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border-l-4 border-indigo-400 hover:bg-gray-100 transition">
+                      <div><span className="font-bold text-gray-800">{ep.title}</span><span className="text-xs text-gray-500 ml-3">{ep.date}</span></div>
+                      <div className="flex gap-3 items-center">
+                        <span className="text-sm text-indigo-600">{ep.duration}</span>
+                        <i className="fas fa-play-circle text-indigo-500 cursor-pointer hover:scale-110 transition"></i>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "support" && (
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 hover:shadow-md transition">
+                <i className="fas fa-crown text-4xl text-amber-500 mb-3"></i>
+                <h3 className="text-2xl font-bold text-gray-800">Extra Support</h3>
+                <p className="text-gray-600 text-sm mt-1">Want to support more? Send additional tips!</p>
+                <div className="mt-6 flex gap-3 flex-wrap">
+                  <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
+                    <i className="fab fa-paypal"></i> Tip $5
+                  </button>
+                  <button className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
+                    <i className="fab fa-cashapp"></i> Tip $20
+                  </button>
+                </div>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 hover:shadow-md transition">
+                <i className="fas fa-envelope text-3xl text-indigo-500 mb-3"></i>
+                <h3 className="text-2xl font-bold text-gray-800">Need Help?</h3>
+                <p className="text-gray-600 text-sm">Contact support: <strong>{SUPPORT_EMAIL}</strong></p>
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <p className="text-xs text-gray-500">After sending payment, email your Device ID and payment screenshot to the address above. We'll approve your device within 12 hours.</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-12 text-center border-t border-gray-200 pt-8 text-gray-500 text-sm flex justify-center gap-6 flex-wrap">
+          <span><i className="fas fa-globe"></i> 48+ Countries</span>
+          <span><i className="fas fa-microphone-alt"></i> 120+ Episodes</span>
+          <span><i className="fas fa-heart text-rose-400"></i> Premium Member</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Main App ----------
+const App = () => {
+  const [accessGranted, setAccessGranted] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('admin') === 'captain123') setShowAdmin(true);
+  }, []);
+
+  useEffect(() => {
+    const savedMethod = localStorage.getItem('selected_payment_method');
+    const savedAccess = localStorage.getItem('access_granted');
+    if (savedMethod && savedAccess === 'true') {
+      setSelectedMethod(JSON.parse(savedMethod));
+      setAccessGranted(true);
+    }
+  }, []);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handlePayment = (method) => {
+    setSelectedMethod(method);
+    localStorage.setItem('selected_payment_method', JSON.stringify(method));
+    localStorage.setItem('access_granted', 'true');
+    setAccessGranted(true);
+    showToast(`✅ Welcome! Click any social link to unlock.`);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_granted');
+    localStorage.removeItem('selected_payment_method');
+    if (selectedMethod) localStorage.removeItem(`unlocked_links_${selectedMethod.name}`);
+    setAccessGranted(false);
+    setSelectedMethod(null);
+    showToast("👋 Logged out successfully.");
+  };
+
+  if (accessGranted && selectedMethod) {
+    return <Dashboard paymentMethod={selectedMethod} onLogout={handleLogout} />;
+  }
+
+  return (
+    <>
+      {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
+      <div className="min-h-screen flex items-center justify-center px-6 py-16 md:py-24" style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #e6f0ff 100%)" }}>
+        <div className="max-w-4xl w-full bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 md:p-12 fade-up border border-gray-200">
+          <div className="flex flex-col items-center text-center">
+            <div className="relative mb-6">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-indigo-400 shadow-xl overflow-hidden">
+                <img src={PILOT_AVATAR} alt="Captain" className="w-full h-full object-cover" />
+              </div>
+              <div className="absolute -bottom-2 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+                ✈️ OFFICIAL
+              </div>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              Executive Allure
+            </h1>
+            <p className="text-gray-600 text-lg mt-2">World‑class airline pilot | Podcaster | AvGeek</p>
+          </div>
+
+          <div className="mt-12 border-t border-gray-200 pt-8">
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Choose Your Payment Method</h2>
+            <p className="text-center text-gray-600 mb-8">
+              Select how you'd like to pay. You'll unlock individual social links by sending proof of payment.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+              {PAYMENT_METHODS.map((method) => (
+                <div
+                  key={method.name}
+                  onClick={() => handlePayment(method)}
+                  className="payment-card flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  <i className={`${method.icon} text-5xl ${method.color} mb-3`}></i>
+                  <span className="text-xl font-semibold text-gray-800">{method.name}</span>
+                  <span className="text-xs text-gray-500 mt-2">Select to continue</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
+          <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
+        </div>
+      </div>
+
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white shadow-lg border border-gray-200 text-gray-800 px-6 py-3 rounded-full z-50 flex items-center gap-2 text-sm">
+          <i className="fas fa-check-circle text-green-500"></i> {toastMessage}
+        </div>
+      )}
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
