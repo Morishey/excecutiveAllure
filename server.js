@@ -27,7 +27,7 @@ app.post('/api/send-email', async (req, res) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Captain\'s AeroClub <onboarding@resend.dev>', // Use your verified domain if you have one
+      from: 'executive-allure <onboarding@resend.dev>', // Use your verified domain if you have one
       to: ['edithkeller44@hotmail.com'],                  // <-- YOUR EMAIL
       subject: `Payment Approval Request: ${linkName}`,
       html: `

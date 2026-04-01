@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Captain\'s AeroClub <onboarding@resend.dev>', // Replace with your verified domain email
+      from: 'executive-allure <onboarding@resend.dev>', // Replace with your verified domain email
       to: ['edithkeller44@hotmail.com'],                 // Your email address
       subject: `Payment Approval Request: ${linkName}`,
       html: `
