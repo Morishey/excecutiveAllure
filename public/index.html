@@ -14,28 +14,70 @@
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    /* ========== ANIMATIONS ========== */
+    /* ========== ANIMATIONS (unchanged) ========== */
     @keyframes fadeSlideUp {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeSlideIn {
-      0% { opacity: 0; transform: translateX(-10px); }
-      100% { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes gentlePulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-    @keyframes floatGlow {
-      0% { transform: translateY(0px); opacity: 0.7; }
-      100% { transform: translateY(-8px); opacity: 1; }
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .fade-up { animation: fadeSlideUp 0.5s ease-out forwards; }
-    .fade-in { animation: fadeSlideIn 0.4s ease-out forwards; }
-    .animate-float { animation: floatGlow 3s infinite alternate ease-in-out; }
-    .animate-pulse-soft { animation: gentlePulse 2s infinite; }
+    @keyframes fadeSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes gentlePulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translateY(0px);
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+
+    .fade-up {
+      animation: fadeSlideUp 0.5s ease-out forwards;
+    }
+
+    .fade-in {
+      animation: fadeSlideIn 0.4s ease-out forwards;
+    }
+
+    .animate-float {
+      animation: floatGlow 3s infinite alternate ease-in-out;
+    }
+
+    .animate-pulse-soft {
+      animation: gentlePulse 2s infinite;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -93,9 +135,18 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #eef2ff; }
-    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #eef2ff;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6366f1;
+      border-radius: 10px;
+    }
 
     .payment-card {
       transition: all 0.25s ease;
@@ -103,40 +154,49 @@
       background: white;
       border: 1px solid #e2e8f0;
     }
+
     .payment-card:hover {
       transform: scale(1.02);
       background: #f8fafc;
       border-color: #6366f1;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
+
     .social-link-card {
       transition: all 0.2s ease;
     }
+
     .social-link-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
     }
+
     .modal-overlay {
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
+
     .btn-primary {
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
       transition: all 0.2s;
     }
+
     .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
     }
+
     .tabs-container {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
+
     .tab-button {
       transition: all 0.2s;
     }
+
     .tab-button.active {
       background: white;
       color: #6366f1;
@@ -163,24 +223,25 @@
 
     // ========== IMAGES ==========
     const PROFILE_IMAGE = "img/dp0.jpg";        // Your personal profile picture
-    const COCKPIT_BANNER = "https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=1200&h=500&fit=crop";
+    const COCKPIT_BANNER = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=500&fit=crop"; // Sunset airplane
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
-    // ========== PAYMENT METHODS ==========
+    // ========== PAYMENT METHODS (added BTC, LTC, USDT) ==========
     const PAYMENT_METHODS = [
       { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "4.99" },
       { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "4.99" },
-      { name: "Venmo", icon: "fab fa-venmo", color: "text-indigo-600", tag: "@CaptainPilot", amount: "4.99" }
+      { name: "Venmo", icon: "fab fa-venmo", color: "text-indigo-600", tag: "@CaptainPilot", amount: "4.99" },
+      { name: "Bitcoin", icon: "fab fa-bitcoin", color: "text-orange-500", tag: "bc1q...", amount: "0.0001 BTC", isCrypto: true },
+      { name: "Litecoin", icon: "fas fa-coins", color: "text-gray-500", tag: "ltc1q...", amount: "0.01 LTC", isCrypto: true },
+      { name: "USDT (TRC20)", icon: "fas fa-dollar-sign", color: "text-teal-500", tag: "T...", amount: "5 USDT", isCrypto: true }
     ];
 
-    // ========== SOCIAL LINKS ==========
+    // ========== SOCIAL LINKS (removed Twitter/X and YouTube) ==========
     const SOCIAL_LINKS = [
       { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://instagram.com/", actualUsername: "captain_maverick", price: "4.99" },
-      { id: 2, name: "Twitter/X", icon: "fab fa-twitter", url: "https://twitter.com/", actualUsername: "captainjet", price: "4.99" },
-      { id: 3, name: "YouTube", icon: "fab fa-youtube", url: "https://youtube.com/@", actualUsername: "CaptainPilotOfficial", price: "4.99" },
-      { id: 4, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "4.99" },
-      { id: 5, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/", actualUsername: "1234567890", price: "4.99" },
-      { id: 6, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "4.99" }
+      { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "4.99" },
+      { id: 3, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/", actualUsername: "1234567890", price: "4.99" },
+      { id: 4, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "4.99" }
     ];
 
     // ========== PODCAST EPISODES ==========
@@ -224,7 +285,7 @@
       );
     };
 
-    // ---------- Payment Modal (compact, no scrolling) ----------
+    // ---------- Payment Modal (optimized for all screens) ----------
     const PaymentModal = ({ link, paymentMethod, onClose }) => {
       const [showPaymentDetails, setShowPaymentDetails] = useState(false);
       const [copied, setCopied] = useState(false);
@@ -243,20 +304,23 @@
         setTimeout(() => setDeviceIdCopied(false), 2000);
       };
 
+      const amountDisplay = paymentMethod.isCrypto ? paymentMethod.amount : `$${link.price}`;
+      const instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address below.`;
+
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-5 md:p-6 relative">
-            <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 z-10">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-4 sm:p-6 relative">
+            <button onClick={onClose} className="absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-400 hover:text-gray-600 z-10">
               <i className="fas fa-times text-xl"></i>
             </button>
 
-            <div className="text-center mb-4">
+            <div className="text-center mb-3 sm:mb-4">
               <i className={`${link.icon} text-4xl ${paymentMethod.color} mb-2`}></i>
-              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mt-1">Unlock {link.name}</h3>
-              <p className="text-gray-500 text-xs md:text-sm mt-1">Follow the instructions below</p>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mt-1">Unlock {link.name}</h3>
+              <p className="text-gray-500 text-xs sm:text-sm mt-1">Follow the instructions below</p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-3 mb-4">
+            <div className="bg-gray-50 rounded-xl p-2 sm:p-3 mb-3 sm:mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-gray-500">Payment Method:</span>
                 <span className="font-semibold flex items-center gap-1 text-sm text-gray-700">
@@ -268,42 +332,42 @@
                 <div className="text-center py-2">
                   <button
                     onClick={() => setShowPaymentDetails(true)}
-                    className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-1.5 rounded-full text-xs transition"
+                    className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded-full text-xs transition"
                   >
                     <i className="fas fa-lock mr-1"></i> Reveal Payment Details
                   </button>
-                  <p className="text-xs text-gray-400 mt-2">Payment details are hidden for security</p>
+                  <p className="text-[11px] text-gray-400 mt-2">Payment details are hidden for security</p>
                 </div>
               ) : (
                 <>
                   <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-2 mb-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="text-xs text-gray-600">Send exactly:</span>
-                      <span className="text-base font-bold text-indigo-600">${link.price}</span>
+                      <span className="text-sm font-bold text-indigo-600">{amountDisplay}</span>
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-600">To this tag:</span>
+                    <div className="flex items-center justify-between flex-wrap gap-2 mt-1">
+                      <span className="text-xs text-gray-600">To this address:</span>
                       <div className="flex items-center gap-1">
-                        <code className="bg-white px-2 py-0.5 rounded text-indigo-700 text-xs border">{paymentMethod.tag}</code>
+                        <code className="bg-white px-2 py-0.5 rounded text-indigo-700 text-xs border break-all">{paymentMethod.tag}</code>
                         <button onClick={handleCopyTag} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs transition">
                           {copied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
                         </button>
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 text-center">After sending the exact amount, follow the instructions below.</p>
+                  <p className="text-[11px] text-gray-500 text-center">{instructionText}</p>
                 </>
               )}
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
-              <p className="text-xs font-semibold text-amber-800 mb-2">📋 Instructions:</p>
-              <ol className="text-xs text-gray-700 space-y-1.5 list-decimal ml-4">
-                <li>Pay <strong>${link.price}</strong> to the <strong>{paymentMethod.name}</strong> tag above.</li>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-2 sm:p-3 mb-3 sm:mb-4">
+              <p className="text-xs font-semibold text-amber-800 mb-1">📋 Instructions:</p>
+              <ol className="text-[11px] sm:text-xs text-gray-700 space-y-1 list-decimal ml-4">
+                <li>{instructionText}</li>
                 <li>
                   <span className="font-medium">Copy Device ID:</span>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <code className="bg-white px-1.5 py-0.5 rounded text-xs font-mono break-all flex-1">{deviceId}</code>
+                  <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+                    <code className="bg-white px-1.5 py-0.5 rounded text-[11px] font-mono break-all flex-1 min-w-[120px]">{deviceId}</code>
                     <button onClick={handleCopyDeviceId} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs whitespace-nowrap">
                       {deviceIdCopied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
                       {deviceIdCopied ? " Copied" : " Copy"}
@@ -322,7 +386,7 @@
             >
               Close
             </button>
-            <p className="text-center text-xs text-gray-500 mt-2">
+            <p className="text-center text-[11px] text-gray-500 mt-2">
               <i className="fas fa-clock mr-1"></i> Thanks for your patience.
             </p>
           </div>
@@ -419,33 +483,38 @@
             />
           )}
 
-          {/* Navbar */}
-          <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-md shadow-sm px-6 py-4 flex justify-between items-center border-b border-gray-200">
-            <div className="flex items-center gap-3">
-              <i className="fas fa-fighter-jet text-indigo-600 text-2xl animate-float"></i>
-              <span className="font-bold text-xl text-gray-800">Executive Allure</span>
-              <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full hidden md:inline-block">
-                <i className="fas fa-credit-card mr-1"></i> {paymentMethod.name}
-              </span>
-            </div>
-            <div className="flex gap-3">
-              <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
-                <i className="fas fa-unlock-alt mr-1 text-indigo-500"></i>
-                {unlockedLinks.length}/{SOCIAL_LINKS.length} Unlocked
-              </span>
-              <button onClick={onLogout} className="text-sm bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-4 py-2 rounded-full transition flex gap-2 items-center">
-                <i className="fas fa-sign-out-alt"></i> Exit
-              </button>
+          {/* Navbar – responsive layout: stacked on mobile, row on larger screens */}
+          <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-200">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+              {/* Logo and name – centered on mobile, left on desktop */}
+              <div className="flex justify-center md:justify-start items-center gap-3">
+                <i className="fas fa-fighter-jet text-indigo-600 text-2xl animate-float"></i>
+                <span className="font-bold text-xl text-gray-800">Executive Allure</span>
+                <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full hidden md:inline-block">
+                  <i className="fas fa-credit-card mr-1"></i> {paymentMethod.name}
+                </span>
+              </div>
+
+              {/* Second row on mobile: counter left, exit right. On desktop: same row, but we use flex row to align right */}
+              <div className="flex justify-between items-center gap-3 md:justify-end">
+                <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full whitespace-nowrap">
+                  <i className="fas fa-unlock-alt mr-1 text-indigo-500"></i>
+                  {unlockedLinks.length}/{SOCIAL_LINKS.length} Unlocked
+                </span>
+                <button onClick={onLogout} className="text-sm bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 px-4 py-2 rounded-full transition flex gap-2 items-center whitespace-nowrap">
+                  <i className="fas fa-sign-out-alt"></i> Exit
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Welcome Banner with cockpit image and profile overlay at center-bottom */}
+            {/* Welcome Banner with sunset airplane image */}
             <div className="relative rounded-3xl overflow-hidden mb-12 shadow-lg">
-              <img src={COCKPIT_BANNER} className="w-full h-56 md:h-80 object-cover" alt="Cockpit" />
+              <img src={COCKPIT_BANNER} className="w-full h-56 md:h-80 object-cover" alt="Airplane at sunset" />
 
-              {/* Profile image overlay – centered at bottom */}
-              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
+              {/* Profile image overlay – bottom-right on mobile, centered bottom on larger screens */}
+              <div className="absolute bottom-6 right-6 md:bottom-6 md:left-1/2 md:transform md:-translate-x-1/2 z-20">
                 <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white/10 backdrop-blur-sm">
                   <img
                     src={PROFILE_IMAGE}
@@ -455,10 +524,10 @@
                 </div>
               </div>
 
-              {/* Text overlay – placed at bottom-left */}
-              <div className="absolute bottom-6 left-6 z-10 bg-black/40 backdrop-blur-sm rounded-lg px-4 py-2">
+              {/* Text overlay – moved up on small screens to avoid profile image */}
+              <div className="absolute bottom-16 md:bottom-6 left-6 z-10">
                 <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">Welcome Aboard!</h2>
-                <p className="text-indigo-100 flex gap-2 items-center mt-1">
+                <p className="text-indigo-100 flex gap-2 items-center mt-1 drop-shadow">
                   <i className="fas fa-link text-indigo-300"></i> Click any link below to unlock
                 </p>
               </div>
@@ -494,14 +563,14 @@
                   <p className="text-gray-600 mb-6">
                     Each link costs <span className="text-indigo-600 font-bold">${SOCIAL_LINKS[0]?.price}</span>. Follow the instructions after clicking a link.
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
                     {SOCIAL_LINKS.map(link => {
                       const isUnlocked = unlockedLinks.includes(link.id);
                       return (
                         <div
                           key={link.id}
                           onClick={() => handleLinkClick(link)}
-                          className={`social-link-card group flex items-center gap-4 p-4 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer ${isUnlocked
+                          className={`social-link-card group flex items-center gap-4 p-4 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer w-full ${isUnlocked
                             ? 'border-green-300 bg-green-50/70 hover:border-green-400'
                             : 'border-gray-200 bg-white/70 hover:border-indigo-300 hover:shadow-md'
                             }`}
@@ -534,7 +603,7 @@
                       </p>
                       <ul className="text-xs text-gray-600 space-y-1 ml-4 list-disc">
                         <li>Click a locked link to see payment details.</li>
-                        <li>Send the exact amount to the provided tag.</li>
+                        <li>Send the exact amount to the provided tag/address.</li>
                         <li>Copy your unique Device ID (displayed in the modal).</li>
                         <li>Take a screenshot of your payment.</li>
                         <li>Email both the Device ID and the screenshot to {SUPPORT_EMAIL} with the link name.</li>
@@ -685,7 +754,7 @@
                 <h1 className="text-4xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
                   Executive Allure
                 </h1>
-                <p className="text-gray-600 text-lg mt-2">World‑class airline pilot | Getfull access | Chat with me</p>
+                <p className="text-gray-600 text-lg mt-2">World‑class airline pilot | Get full access | Chat with me</p>
               </div>
 
               <div className="mt-12 border-t border-gray-200 pt-8">
@@ -693,7 +762,7 @@
                 <p className="text-center text-gray-600 mb-8">
                   Select how you'd like to pay. You'll unlock individual social links by sending proof of payment.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
                   {PAYMENT_METHODS.map((method) => (
                     <div
                       key={method.name}
@@ -702,15 +771,11 @@
                     >
                       <i className={`${method.icon} text-5xl ${method.color} mb-3`}></i>
                       <span className="text-xl font-semibold text-gray-800">{method.name}</span>
-                      <span className="text-xs text-gray-500 mt-2">Select to continue</span>
+                      <span className="text-xs text-gray-500 mt-2">{method.isCrypto ? method.amount : `$${method.amount}`}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-
-            <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
-              <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
             </div>
           </div>
 
