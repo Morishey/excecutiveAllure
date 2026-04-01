@@ -216,7 +216,7 @@
     // ========== SOCIAL LINKS ==========
     const SOCIAL_LINKS = [
       { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://instagram.com/", actualUsername: "captain_maverick", price: "12.99" },
-      { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "12.99" },
+      // { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "12.99" },
       { id: 3, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/", actualUsername: "1234567890", price: "12.99" },
       { id: 4, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "12.99" }
     ];
@@ -560,7 +560,8 @@
                   <p className="text-gray-600 mb-6">
                     Each link costs <span className="text-indigo-600 font-bold">${SOCIAL_LINKS[0]?.price}</span>. Follow the instructions after clicking a link.
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
+                  {/* Updated grid: 1 column on small, 2 on medium, 3 on large, centered */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center mx-auto w-full max-w-4xl">
                     {SOCIAL_LINKS.map(link => {
                       const isUnlocked = unlockedLinks.includes(link.id);
                       return (
