@@ -20,43 +20,34 @@
         opacity: 0;
         transform: translateY(20px);
       }
-
       100% {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes fadeSlideIn {
       0% {
         opacity: 0;
         transform: translateX(-10px);
       }
-
       100% {
         opacity: 1;
         transform: translateX(0);
       }
     }
-
     @keyframes gentlePulse {
-
-      0%,
-      100% {
+      0%, 100% {
         transform: scale(1);
       }
-
       50% {
         transform: scale(1.02);
       }
     }
-
     @keyframes floatGlow {
       0% {
         transform: translateY(0px);
         opacity: 0.7;
       }
-
       100% {
         transform: translateY(-8px);
         opacity: 1;
@@ -66,15 +57,12 @@
     .fade-up {
       animation: fadeSlideUp 0.5s ease-out forwards;
     }
-
     .fade-in {
       animation: fadeSlideIn 0.4s ease-out forwards;
     }
-
     .animate-float {
       animation: floatGlow 3s infinite alternate ease-in-out;
     }
-
     .animate-pulse-soft {
       animation: gentlePulse 2s infinite;
     }
@@ -138,11 +126,9 @@
     ::-webkit-scrollbar {
       width: 8px;
     }
-
     ::-webkit-scrollbar-track {
       background: #eef2ff;
     }
-
     ::-webkit-scrollbar-thumb {
       background: #6366f1;
       border-radius: 10px;
@@ -154,49 +140,40 @@
       background: white;
       border: 1px solid #e2e8f0;
     }
-
     .payment-card:hover {
       transform: scale(1.02);
       background: #f8fafc;
       border-color: #6366f1;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
-
     .social-link-card {
       transition: all 0.2s ease;
     }
-
     .social-link-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
     }
-
     .modal-overlay {
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
-
     .btn-primary {
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
       transition: all 0.2s;
     }
-
     .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
     }
-
     .tabs-container {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
-
     .tab-button {
       transition: all 0.2s;
     }
-
     .tab-button.active {
       background: white;
       color: #6366f1;
@@ -226,7 +203,7 @@
     const COCKPIT_BANNER = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=500&fit=crop"; // Sunset airplane
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
-    // ========== PAYMENT METHODS (added BTC, LTC, USDT) ==========
+    // ========== PAYMENT METHODS ==========
     const PAYMENT_METHODS = [
       { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "4.99" },
       { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "4.99" },
@@ -236,7 +213,7 @@
       { name: "USDT (TRC20)", icon: "fas fa-dollar-sign", color: "text-teal-500", tag: "T...", amount: "5 USDT", isCrypto: true }
     ];
 
-    // ========== SOCIAL LINKS (removed Twitter/X and YouTube) ==========
+    // ========== SOCIAL LINKS ==========
     const SOCIAL_LINKS = [
       { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://instagram.com/", actualUsername: "captain_maverick", price: "4.99" },
       { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "4.99" },
@@ -285,7 +262,7 @@
       );
     };
 
-    // ---------- Payment Modal (optimized for all screens) ----------
+    // ---------- Payment Modal ----------
     const PaymentModal = ({ link, paymentMethod, onClose }) => {
       const [showPaymentDetails, setShowPaymentDetails] = useState(false);
       const [copied, setCopied] = useState(false);
@@ -394,22 +371,24 @@
       );
     };
 
-    // ---------- Toast Notification ----------
-    const Toast = ({ message, type, onClose }) => {
+    // ---------- Toast Notification (now supports title and longer duration) ----------
+    const Toast = ({ message, type, onClose, title, duration = 3000 }) => {
       useEffect(() => {
-        const timer = setTimeout(onClose, 3000);
+        const timer = setTimeout(onClose, duration);
         return () => clearTimeout(timer);
-      }, [onClose]);
+      }, [onClose, duration]);
       return (
-        <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-          }`}>
-          <i className={`fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
-          {message}
+        <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-start gap-2 text-sm ${type === 'success' ? 'bg-green-500 text-white' : type === 'info' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
+          <div className="flex-1">
+            {title && <div className="font-bold mb-1">{title}</div>}
+            <div>{message}</div>
+          </div>
+          <button onClick={onClose} className="ml-2 text-white hover:text-gray-200">×</button>
         </div>
       );
     };
 
-    // ---------- Dashboard ----------
+    // ---------- Dashboard with notifications ----------
     const Dashboard = ({ paymentMethod, onLogout }) => {
       const [activeTab, setActiveTab] = useState("connect");
       const [unlockedLinks, setUnlockedLinks] = useState([]);
@@ -417,6 +396,8 @@
       const [showPaymentModal, setShowPaymentModal] = useState(false);
       const [toast, setToast] = useState(null);
       const [loadingApprovals, setLoadingApprovals] = useState(true);
+      const [notification, setNotification] = useState(null);
+      const [shownNotifications, setShownNotifications] = useState({});
 
       const fetchApprovals = async () => {
         try {
@@ -424,9 +405,24 @@
           if (!res.ok) throw new Error();
           const data = await res.json();
           const myId = getDeviceId();
+
+          // Unlock links
           const approvedNames = data[myId] || [];
           const unlockedIds = approvedNames.map(name => SOCIAL_LINKS.find(l => l.name === name)?.id).filter(Boolean);
           setUnlockedLinks(unlockedIds);
+
+          // Check for notifications
+          if (data.notifications && data.notifications[myId]) {
+            const notif = data.notifications[myId];
+            // Use a unique key based on timestamp or message to avoid duplicates
+            const notifKey = notif.timestamp ? `${myId}-${notif.timestamp}` : `${myId}-${notif.message}`;
+            if (!shownNotifications[notifKey]) {
+              setNotification(notif);
+              setShownNotifications(prev => ({ ...prev, [notifKey]: true }));
+            }
+          } else {
+            setNotification(null);
+          }
         } catch (err) {
           console.warn("Could not fetch approvals, using localStorage fallback.");
           const saved = localStorage.getItem(`unlocked_links_${paymentMethod.name}`);
@@ -435,6 +431,18 @@
           setLoadingApprovals(false);
         }
       };
+
+      // Show notification as a toast when it's set
+      useEffect(() => {
+        if (notification) {
+          setToast({
+            message: notification.message,
+            type: 'info',
+            title: notification.title || '📢 Special Announcement',
+            duration: 10000 // 10 seconds
+          });
+        }
+      }, [notification]);
 
       useEffect(() => {
         if (!loadingApprovals) {
@@ -448,7 +456,7 @@
         return () => clearInterval(interval);
       }, []);
 
-      const showToast = (message, type = 'success') => setToast({ message, type });
+      const showToast = (message, type = 'success') => setToast({ message, type, duration: 3000 });
 
       const handleLinkClick = (link) => {
         if (unlockedLinks.includes(link.id)) {
@@ -474,7 +482,7 @@
 
       return (
         <div className="min-h-screen">
-          {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+          {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} title={toast.title} duration={toast.duration} />}
           {showPaymentModal && selectedLink && (
             <PaymentModal
               link={selectedLink}
@@ -483,10 +491,9 @@
             />
           )}
 
-          {/* Navbar – responsive layout: stacked on mobile, row on larger screens */}
+          {/* Navbar – responsive layout */}
           <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-md shadow-sm border-b border-gray-200">
             <div className="px-4 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-              {/* Logo and name – centered on mobile, left on desktop */}
               <div className="flex justify-center md:justify-start items-center gap-3">
                 <i className="fas fa-fighter-jet text-indigo-600 text-2xl animate-float"></i>
                 <span className="font-bold text-xl text-gray-800">Executive Allure</span>
@@ -494,8 +501,6 @@
                   <i className="fas fa-credit-card mr-1"></i> {paymentMethod.name}
                 </span>
               </div>
-
-              {/* Second row on mobile: counter left, exit right. On desktop: same row, but we use flex row to align right */}
               <div className="flex justify-between items-center gap-3 md:justify-end">
                 <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full whitespace-nowrap">
                   <i className="fas fa-unlock-alt mr-1 text-indigo-500"></i>
@@ -509,22 +514,14 @@
           </div>
 
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Welcome Banner with sunset airplane image */}
+            {/* Welcome Banner */}
             <div className="relative rounded-3xl overflow-hidden mb-12 shadow-lg">
               <img src={COCKPIT_BANNER} className="w-full h-56 md:h-80 object-cover" alt="Airplane at sunset" />
-
-              {/* Profile image overlay – bottom-right on mobile, centered bottom on larger screens */}
               <div className="absolute bottom-6 right-6 md:bottom-6 md:left-1/2 md:transform md:-translate-x-1/2 z-20">
                 <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white/10 backdrop-blur-sm">
-                  <img
-                    src={PROFILE_IMAGE}
-                    alt="Captain"
-                    className="w-full h-full object-cover object-[center_5%]"
-                  />
+                  <img src={PROFILE_IMAGE} alt="Captain" className="w-full h-full object-cover object-[center_5%]" />
                 </div>
               </div>
-
-              {/* Text overlay – moved up on small screens to avoid profile image */}
               <div className="absolute bottom-16 md:bottom-6 left-6 z-10">
                 <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">Welcome Aboard!</h2>
                 <p className="text-indigo-100 flex gap-2 items-center mt-1 drop-shadow">
@@ -533,7 +530,7 @@
               </div>
             </div>
 
-            {/* Centered Tabs */}
+            {/* Tabs */}
             <div className="tabs-container mb-8">
               {[
                 { id: "connect", label: "🔗 Social Links", icon: "fas fa-share-alt" },
@@ -776,6 +773,10 @@
                   ))}
                 </div>
               </div>
+            </div>
+
+            <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
+              <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
             </div>
           </div>
 

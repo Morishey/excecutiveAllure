@@ -1,4 +1,13 @@
 {
-  "device1 id": ["Instagram", "Telegram"],
-  "device-id-2": ["WhatsApp"]
+  "device id 123": ["Instagram"],
+  "device-id-456": ["WhatsApp"],
+
+  
+  "notifications": {
+    "6tkcgyg83g6mwqn5h8ozn": {
+      "title": "🎉 Special Offer!",
+      "message": "Thank you for your support! Use code PILOT10 for 10% off your next purchase.",
+      "timestamp": "2025-04-01T12:00:00Z"
+    }
+  }
 }
