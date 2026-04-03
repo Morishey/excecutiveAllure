@@ -203,21 +203,21 @@
     const COCKPIT_BANNER = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=500&fit=crop"; // Sunset airplane
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
-    // ========== PAYMENT METHODS ==========
+    // ========== PAYMENT METHODS (updated addresses) ==========
     const PAYMENT_METHODS = [
       { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "12.99" },
       { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "12.99" },
       { name: "Venmo", icon: "fab fa-venmo", color: "text-indigo-600", tag: "@CaptainPilot", amount: "12.99" },
-      { name: "Bitcoin", icon: "fab fa-bitcoin", color: "text-orange-500", tag: "bc1q...", amount: "0.0001998 BTC", isCrypto: true },
-      { name: "Litecoin", icon: "fas fa-coins", color: "text-gray-500", tag: "ltc1q...", amount: "0.17 LTC", isCrypto: true },
-      { name: "USDT (TRC20)", icon: "fas fa-dollar-sign", color: "text-teal-500", tag: "T...", amount: "12.99 USDT", isCrypto: true }
+      { name: "Bitcoin", icon: "fab fa-bitcoin", color: "text-orange-500", tag: "bc1qj6sum8jhhy7ru3hu6fujqqu2t4y7zqflsmey5c", amount: "0.0001998 BTC", isCrypto: true, network: "Bitcoin network" },
+      { name: "Litecoin", icon: "fas fa-coins", color: "text-gray-500", tag: "ltc1qksjjncrlgzqxl58u4y3xl7mc52nas6m6v390tk", amount: "0.17 LTC", isCrypto: true, network: "Litecoin network" },
+      { name: "USDT (ERC20)", icon: "fas fa-dollar-sign", color: "text-teal-500", tag: "0x5B9A5674Aa9989a9B4826a99fed4B03881d86483", amount: "12.99 USDT", isCrypto: true, network: "Ethereum (ERC20) network" }
     ];
 
     // ========== SOCIAL LINKS ==========
     const SOCIAL_LINKS = [
       { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://www.instagram.com/goldenhourceo?igsh=NTc4MTIwNjQ2YQ%3D%3D&utm_source=qr", actualUsername: "goldenhourceo", price: "12.99" },
       // { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "12.99" },
-      { id: 3, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/", actualUsername: "1234567890", price: "12.99" },
+      { id: 3, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/13055239916", actualUsername: "3055239916", price: "12.99" },
       { id: 4, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "12.99" }
     ];
 
@@ -262,7 +262,7 @@
       );
     };
 
-    // ---------- Payment Modal ----------
+    // ---------- Payment Modal (updated to show network for crypto) ----------
     const PaymentModal = ({ link, paymentMethod, onClose }) => {
       const [showPaymentDetails, setShowPaymentDetails] = useState(false);
       const [copied, setCopied] = useState(false);
@@ -282,7 +282,10 @@
       };
 
       const amountDisplay = paymentMethod.isCrypto ? paymentMethod.amount : `$${link.price}`;
-      const instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address below.`;
+      let instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address below.`;
+      if (paymentMethod.network) {
+        instructionText += ` Use the ${paymentMethod.network}.`;
+      }
 
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
