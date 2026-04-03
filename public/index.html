@@ -20,34 +20,43 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       100% {
         opacity: 1;
         transform: translateY(0);
       }
     }
+
     @keyframes fadeSlideIn {
       0% {
         opacity: 0;
         transform: translateX(-10px);
       }
+
       100% {
         opacity: 1;
         transform: translateX(0);
       }
     }
+
     @keyframes gentlePulse {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: scale(1);
       }
+
       50% {
         transform: scale(1.02);
       }
     }
+
     @keyframes floatGlow {
       0% {
         transform: translateY(0px);
         opacity: 0.7;
       }
+
       100% {
         transform: translateY(-8px);
         opacity: 1;
@@ -57,12 +66,15 @@
     .fade-up {
       animation: fadeSlideUp 0.5s ease-out forwards;
     }
+
     .fade-in {
       animation: fadeSlideIn 0.4s ease-out forwards;
     }
+
     .animate-float {
       animation: floatGlow 3s infinite alternate ease-in-out;
     }
+
     .animate-pulse-soft {
       animation: gentlePulse 2s infinite;
     }
@@ -126,9 +138,11 @@
     ::-webkit-scrollbar {
       width: 8px;
     }
+
     ::-webkit-scrollbar-track {
       background: #eef2ff;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #6366f1;
       border-radius: 10px;
@@ -140,40 +154,49 @@
       background: white;
       border: 1px solid #e2e8f0;
     }
+
     .payment-card:hover {
       transform: scale(1.02);
       background: #f8fafc;
       border-color: #6366f1;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
+
     .social-link-card {
       transition: all 0.2s ease;
     }
+
     .social-link-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
     }
+
     .modal-overlay {
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
+
     .btn-primary {
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
       transition: all 0.2s;
     }
+
     .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
     }
+
     .tabs-container {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
+
     .tab-button {
       transition: all 0.2s;
     }
+
     .tab-button.active {
       background: white;
       color: #6366f1;
@@ -236,30 +259,6 @@
         localStorage.setItem('device_id', id);
       }
       return id;
-    };
-
-    // ---------- Admin Panel ----------
-    const AdminPanel = ({ onClose }) => {
-      const deviceId = getDeviceId();
-      const copyToClipboard = () => {
-        navigator.clipboard.writeText(deviceId);
-        alert("Device ID copied!");
-      };
-      return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative fade-up">
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-              <i className="fas fa-times text-xl"></i>
-            </button>
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Your Device ID</h3>
-            <p className="text-gray-600 text-sm mb-3">Copy this ID and send it to the Captain after paying.</p>
-            <div className="bg-gray-100 p-3 rounded-lg font-mono text-sm break-all mb-4">{deviceId}</div>
-            <button onClick={copyToClipboard} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">
-              Copy Device ID
-            </button>
-          </div>
-        </div>
-      );
     };
 
     // ---------- Payment Modal (updated to show network for crypto) ----------
@@ -355,7 +354,7 @@
                   </div>
                 </li>
                 <li>Take a screenshot of payment confirmation.</li>
-                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br />Device ID, screenshot, and link name (<strong>{link.name}</strong>).</li>
+                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br />Device ID, Payment screenshot, and link name (<strong>{link.name}</strong>).</li>
                 <li>Approval within <strong>12 hours</strong>.</li>
               </ol>
             </div>
@@ -779,9 +778,6 @@
               </div>
             </div>
 
-            <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
-              <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
-            </div>
           </div>
 
           {toastMessage && (
