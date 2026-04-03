@@ -281,7 +281,7 @@
       };
 
       const amountDisplay = paymentMethod.isCrypto ? paymentMethod.amount : `$${link.price}`;
-      let instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address below.`;
+      let instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address above.`;
       if (paymentMethod.network) {
         instructionText += ` Use the ${paymentMethod.network}.`;
       }
