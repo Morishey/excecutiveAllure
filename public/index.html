@@ -203,7 +203,7 @@
     const COCKPIT_BANNER = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=500&fit=crop"; // Sunset airplane
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
-    // ========== PAYMENT METHODS ==========
+    // ========== PAYMENT METHODS (shared for subscription and tips) ==========
     const PAYMENT_METHODS = [
       { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "12.99" },
       { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "12.99" },
@@ -237,109 +237,104 @@
       localStorage.setItem('username', name.toLowerCase());
     };
 
-    // ---------- Username Modal (iOS glass style + welcoming intro) ----------
-const UsernameModal = ({ onSetUsername }) => {
-  const [inputName, setInputName] = useState('');
-  const [error, setError] = useState('');
-  const [checking, setChecking] = useState(false);
+    // ---------- Username Modal (unchanged) ----------
+    const UsernameModal = ({ onSetUsername }) => {
+      const [inputName, setInputName] = useState('');
+      const [error, setError] = useState('');
+      const [checking, setChecking] = useState(false);
 
-  const checkUsernameExists = async (name) => {
-    try {
-      const res = await fetch(APPROVED_JSON_URL + "?t=" + Date.now());
-      if (!res.ok) return false;
-      const data = await res.json();
-      return data.hasOwnProperty(name.toLowerCase());
-    } catch (err) {
-      console.warn("Could not fetch existing usernames, assuming free.");
-      return false;
-    }
-  };
+      const checkUsernameExists = async (name) => {
+        try {
+          const res = await fetch(APPROVED_JSON_URL + "?t=" + Date.now());
+          if (!res.ok) return false;
+          const data = await res.json();
+          return data.hasOwnProperty(name.toLowerCase());
+        } catch (err) {
+          console.warn("Could not fetch existing usernames, assuming free.");
+          return false;
+        }
+      };
 
-  const handleSubmit = async () => {
-    const trimmed = inputName.trim().toLowerCase();
-    if (trimmed.length < 3) {
-      setError('Username must be at least 3 characters');
-      return;
-    }
-    if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
-      setError('Only letters, numbers, and underscores allowed');
-      return;
-    }
-    setChecking(true);
-    const exists = await checkUsernameExists(trimmed);
-    setChecking(false);
-    if (exists) {
-      setError('Username already taken. Please choose another.');
-      return;
-    }
-    setUsername(trimmed);
-    onSetUsername(trimmed);
-  };
+      const handleSubmit = async () => {
+        const trimmed = inputName.trim().toLowerCase();
+        if (trimmed.length < 3) {
+          setError('Username must be at least 3 characters');
+          return;
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
+          setError('Only letters, numbers, and underscores allowed');
+          return;
+        }
+        setChecking(true);
+        const exists = await checkUsernameExists(trimmed);
+        setChecking(false);
+        if (exists) {
+          setError('Username already taken. Please choose another.');
+          return;
+        }
+        setUsername(trimmed);
+        onSetUsername(trimmed);
+      };
 
-  const handleChange = (e) => {
-    setInputName(e.target.value.toLowerCase());
-    setError('');
-  };
+      const handleChange = (e) => {
+        setInputName(e.target.value.toLowerCase());
+        setError('');
+      };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" style={{ background: 'rgba(0,0,0,0.3)' }}>
-      {/* Glass card – iOS style */}
-      <div className="backdrop-blur-xl bg-white/30 rounded-3xl shadow-2xl border border-white/30 max-w-md w-full p-6 relative fade-up">
-        {/* Subtle gradient background overlay (optional) */}
-        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
-        
-        <div className="relative z-10">
-          {/* Welcome message */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm mb-3">
-              <i className="fas fa-fighter-jet text-3xl text-indigo-600"></i>
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" style={{ background: 'rgba(0,0,0,0.3)' }}>
+          <div className="backdrop-blur-xl bg-white/30 rounded-3xl shadow-2xl border border-white/30 max-w-md w-full p-6 relative fade-up">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
+            <div className="relative z-10">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm mb-3">
+                  <i className="fas fa-fighter-jet text-3xl text-indigo-600"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800">Welcome Aboard!</h3>
+                <p className="text-gray-600 text-sm mt-1">
+                  You're about to access exclusive content. First, let's create your unique identifier.
+                </p>
+              </div>
+
+              <p className="text-gray-700 text-sm text-center mb-4">
+                Choose a username (only letters, numbers, underscores).<br />
+                You'll share this with the Captain after payment.
+              </p>
+
+              <input
+                type="text"
+                value={inputName}
+                onChange={handleChange}
+                placeholder="e.g., aviator_jane"
+                className="w-full border border-white/40 bg-white/50 backdrop-blur-sm rounded-xl px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-gray-800 placeholder-gray-500"
+                autoFocus
+                disabled={checking}
+              />
+              {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+
+              <button
+                onClick={handleSubmit}
+                disabled={checking}
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50 shadow-md"
+              >
+                {checking ? (
+                  <><i className="fas fa-spinner fa-pulse mr-2"></i> Checking...</>
+                ) : (
+                  <><i className="fas fa-arrow-right mr-2"></i> Continue</>
+                )}
+              </button>
+
+              <p className="text-xs text-gray-400 mt-4 text-center">
+                <i className="fas fa-info-circle mr-1"></i>
+                If you don't receive approval within 24 hours, please contact support.
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-800">Welcome Aboard!</h3>
-            <p className="text-gray-600 text-sm mt-1">
-              You're about to access exclusive content. First, let's create your unique identifier.
-            </p>
           </div>
-
-          <p className="text-gray-700 text-sm text-center mb-4">
-            Choose a username (only letters, numbers, underscores).<br />
-            You'll share this with the Captain after payment.
-          </p>
-
-          <input
-            type="text"
-            value={inputName}
-            onChange={handleChange}
-            placeholder="e.g., aviator_jane"
-            className="w-full border border-white/40 bg-white/50 backdrop-blur-sm rounded-xl px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-gray-800 placeholder-gray-500"
-            autoFocus
-            disabled={checking}
-          />
-          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-
-          <button
-            onClick={handleSubmit}
-            disabled={checking}
-            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50 shadow-md"
-          >
-            {checking ? (
-              <><i className="fas fa-spinner fa-pulse mr-2"></i> Checking...</>
-            ) : (
-              <><i className="fas fa-arrow-right mr-2"></i> Continue</>
-            )}
-          </button>
-
-          {/* Subtle note */}
-          <p className="text-xs text-gray-400 mt-4 text-center">
-            <i className="fas fa-info-circle mr-1"></i>
-            If you don't receive approval within 24 hours, please contact support.
-          </p>
         </div>
-      </div>
-    </div>
-  );
-};
+      );
+    };
 
-    // ---------- Payment Modal (unchanged, shows username in lowercase) ----------
+    // ---------- Payment Modal for social links (unchanged, includes approval instructions) ----------
     const PaymentModal = ({ link, paymentMethod, onClose }) => {
       const [showPaymentDetails, setShowPaymentDetails] = useState(false);
       const [copied, setCopied] = useState(false);
@@ -451,6 +446,125 @@ const UsernameModal = ({ onSetUsername }) => {
       );
     };
 
+    // ========== COMPACT TIP METHOD SELECTOR (fits small screens) ==========
+    const TipMethodSelector = ({ amount, onSelectMethod, onClose }) => {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 modal-overlay">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+            <button onClick={onClose} className="sticky top-2 right-2 float-right text-gray-400 hover:text-gray-600 p-2">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+            <div className="clear-both px-5 pb-5 pt-2">
+              <div className="text-center mb-4">
+                <i className="fas fa-heart text-3xl text-rose-500 mb-1"></i>
+                <h3 className="text-xl font-bold text-gray-800">Choose Tip Method</h3>
+                <p className="text-gray-500 text-sm">Send ${amount} tip via</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {PAYMENT_METHODS.map((method) => (
+                  <div
+                    key={method.name}
+                    onClick={() => onSelectMethod(method)}
+                    className="payment-card flex items-center gap-3 p-2.5 rounded-xl hover:scale-[1.02] transition cursor-pointer"
+                  >
+                    <i className={`${method.icon} text-2xl ${method.color}`}></i>
+                    <div>
+                      <div className="font-semibold text-gray-800 text-sm">{method.name}</div>
+                      <div className="text-[11px] text-gray-500">{method.isCrypto ? "Crypto" : "Digital"}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-center text-xs text-gray-400 mt-4">No approval needed — pure support</p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ========== COMPACT TIP PAYMENT MODAL (no approval, fits small screens) ==========
+    const TipPaymentModal = ({ amount, paymentMethod, onClose, onSuccess }) => {
+      const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+      const [copied, setCopied] = useState(false);
+      
+      const handleCopyTag = () => {
+        navigator.clipboard.writeText(paymentMethod.tag);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+      
+      const amountDisplay = paymentMethod.isCrypto ? `~$${amount} equivalent in ${paymentMethod.name}` : `$${amount}.00`;
+      let instructionText = `Send exactly ${amountDisplay} to the ${paymentMethod.name} address above.`;
+      if (paymentMethod.network && paymentMethod.isCrypto) {
+        instructionText += ` Use ${paymentMethod.network}.`;
+      }
+      
+      const handleDone = () => {
+        if (onSuccess) onSuccess(amount);
+        onClose();
+      };
+      
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 modal-overlay">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+            <button onClick={onClose} className="sticky top-2 right-2 float-right text-gray-400 hover:text-gray-600 p-2">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+            <div className="clear-both px-5 pb-5 pt-2">
+              <div className="text-center mb-3">
+                <i className={`${paymentMethod.icon} text-4xl ${paymentMethod.color} mb-1`}></i>
+                <h3 className="text-xl font-bold text-gray-800">✨ Extra Tip ✨</h3>
+                <p className="text-gray-500 text-xs">Thank you for your support!</p>
+              </div>
+              
+              <div className="bg-gray-50 rounded-xl p-3 mb-3">
+                {!showPaymentDetails ? (
+                  <div className="text-center py-1">
+                    <button onClick={() => setShowPaymentDetails(true)} className="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-1.5 rounded-full text-xs transition">
+                      Reveal Tip Details
+                    </button>
+                    <p className="text-[10px] text-gray-400 mt-1">Secure one‑tap reveal</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-2">
+                      <div className="flex justify-between items-center flex-wrap gap-1 mb-1">
+                        <span className="text-xs text-gray-700 font-medium">Tip amount:</span>
+                        <span className="text-base font-bold text-indigo-700">{amountDisplay}</span>
+                      </div>
+                      <div className="flex justify-between items-center flex-wrap gap-1">
+                        <span className="text-xs text-gray-700">Send to:</span>
+                        <div className="flex items-center gap-1">
+                          <code className="bg-white px-1.5 py-0.5 rounded text-[10px] border break-all max-w-[160px]">{paymentMethod.tag}</code>
+                          <button onClick={handleCopyTag} className="bg-gray-200 hover:bg-gray-300 px-1.5 py-0.5 rounded text-[10px]">
+                            {copied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
+                          </button>
+                        </div>
+                      </div>
+                      {paymentMethod.network && paymentMethod.isCrypto && (
+                        <p className="text-[10px] text-gray-500 mt-1"><i className="fas fa-network-wired"></i> {paymentMethod.network}</p>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-gray-600 mt-2 text-center">{instructionText}</p>
+                  </>
+                )}
+              </div>
+              
+              {/* No approval instructions – pure tip */}
+              <div className="bg-green-50 border border-green-200 rounded-xl p-2 mb-3 text-center">
+                <i className="fas fa-heart text-rose-500 mr-1"></i>
+                <span className="text-xs text-gray-700">💎 No approval needed – once sent, you're all set!</span>
+              </div>
+              
+              <button onClick={handleDone} className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-2 rounded-xl transition shadow-md text-sm">
+                I've sent the tip ✈️
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     // ---------- Toast Notification ----------
     const Toast = ({ message, type, onClose, title, duration = 3000 }) => {
       useEffect(() => {
@@ -468,7 +582,7 @@ const UsernameModal = ({ onSetUsername }) => {
       );
     };
 
-    // ---------- Dashboard (username‑based, lowercase) ----------
+    // ---------- Dashboard (username‑based) with robust tip flow ----------
     const Dashboard = ({ paymentMethod, onLogout }) => {
       const [activeTab, setActiveTab] = useState("connect");
       const [unlockedLinks, setUnlockedLinks] = useState([]);
@@ -478,6 +592,12 @@ const UsernameModal = ({ onSetUsername }) => {
       const [loadingApprovals, setLoadingApprovals] = useState(true);
       const [notification, setNotification] = useState(null);
       const [shownNotifications, setShownNotifications] = useState({});
+      
+      // Tip flow states
+      const [showTipMethodSelector, setShowTipMethodSelector] = useState(false);
+      const [tipAmount, setTipAmount] = useState(null);
+      const [selectedTipMethod, setSelectedTipMethod] = useState(null);
+      const [showTipPaymentModal, setShowTipPaymentModal] = useState(false);
 
       const fetchApprovals = async () => {
         try {
@@ -485,13 +605,9 @@ const UsernameModal = ({ onSetUsername }) => {
           if (!res.ok) throw new Error();
           const data = await res.json();
           const myUsername = getUsername();
-
-          // Unlock links – data keys are expected to be lowercase (but we'll lowercase the lookup)
           const approvedNames = data[myUsername] || [];
           const unlockedIds = approvedNames.map(name => SOCIAL_LINKS.find(l => l.name === name)?.id).filter(Boolean);
           setUnlockedLinks(unlockedIds);
-
-          // Notifications – also case‑insensitive
           if (data.notifications && data.notifications[myUsername]) {
             const notif = data.notifications[myUsername];
             const notifKey = notif.timestamp ? `${myUsername}-${notif.timestamp}` : `${myUsername}-${notif.message}`;
@@ -534,17 +650,40 @@ const UsernameModal = ({ onSetUsername }) => {
         return () => clearInterval(interval);
       }, []);
 
-      const showToast = (message, type = 'success') => setToast({ message, type, duration: 3000 });
+      const showToastMsg = (message, type = 'success', title = '') => setToast({ message, type, title, duration: 3000 });
 
       const handleLinkClick = (link) => {
         if (unlockedLinks.includes(link.id)) {
           const fullUrl = link.url + link.actualUsername;
           window.open(fullUrl, '_blank');
-          showToast(`✓ Opening ${link.name}...`, 'success');
+          showToastMsg(`✓ Opening ${link.name}...`, 'success');
         } else {
           setSelectedLink(link);
           setShowPaymentModal(true);
         }
+      };
+      
+      // Tip flow handlers
+      const handleTipClick = (amount) => {
+        setTipAmount(amount);
+        setShowTipMethodSelector(true);
+      };
+      
+      const handleTipMethodSelected = (method) => {
+        setSelectedTipMethod(method);
+        setShowTipMethodSelector(false);
+        setShowTipPaymentModal(true);
+      };
+      
+      const handleTipSuccess = (amount) => {
+        showToastMsg(`❤️ Thank you for your $${amount} tip! Your support means the world.`, 'success', 'Tip Received');
+      };
+      
+      const closeTipModals = () => {
+        setShowTipMethodSelector(false);
+        setShowTipPaymentModal(false);
+        setSelectedTipMethod(null);
+        setTipAmount(null);
       };
 
       if (loadingApprovals) {
@@ -566,6 +705,25 @@ const UsernameModal = ({ onSetUsername }) => {
               link={selectedLink}
               paymentMethod={paymentMethod}
               onClose={() => setShowPaymentModal(false)}
+            />
+          )}
+          
+          {/* Tip Method Selector Modal */}
+          {showTipMethodSelector && (
+            <TipMethodSelector
+              amount={tipAmount}
+              onSelectMethod={handleTipMethodSelected}
+              onClose={closeTipModals}
+            />
+          )}
+          
+          {/* Tip Payment Modal (no approval) */}
+          {showTipPaymentModal && selectedTipMethod && tipAmount && (
+            <TipPaymentModal
+              amount={tipAmount}
+              paymentMethod={selectedTipMethod}
+              onClose={closeTipModals}
+              onSuccess={handleTipSuccess}
             />
           )}
 
@@ -730,10 +888,10 @@ const UsernameModal = ({ onSetUsername }) => {
                     <h3 className="text-2xl font-bold text-gray-800">Extra Support</h3>
                     <p className="text-gray-600 text-sm mt-1">Want to support more? Send additional tips!</p>
                     <div className="mt-6 flex gap-3 flex-wrap">
-                      <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
+                      <button onClick={() => handleTipClick(5)} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
                         <i className="fab fa-paypal"></i> Tip $5
                       </button>
-                      <button className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
+                      <button onClick={() => handleTipClick(20)} className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition flex items-center gap-2">
                         <i className="fab fa-cashapp"></i> Tip $20
                       </button>
                     </div>
@@ -883,8 +1041,7 @@ const UsernameModal = ({ onSetUsername }) => {
                 </div>
               </div>
             </div>
-
-               </div>
+          </div>
 
           {toastMessage && (
             <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white shadow-lg border border-gray-200 text-gray-800 px-6 py-3 rounded-full z-50 flex items-center gap-2 text-sm">
