@@ -1,6 +1,6 @@
 {
-  "morishey": ["WhatsApp"],
+  "morishey1": ["WhatsApp"],
   "notifications": {
-    "morishey": { "title": "Welcome!", "message": "Your link is now unlocked." }
+    "morishey1": { "title": "Welcome!", "message": "Your link is now unlocked." }
   }
 }

@@ -237,7 +237,7 @@
       localStorage.setItem('username', name.toLowerCase());
     };
 
-    // ---------- Username Modal (with discreet note) ----------
+    // ---------- Username Modal (iOS glass style + welcoming intro) ----------
 const UsernameModal = ({ onSetUsername }) => {
   const [inputName, setInputName] = useState('');
   const [error, setError] = useState('');
@@ -282,35 +282,58 @@ const UsernameModal = ({ onSetUsername }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative fade-up">
-        <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">Choose a Username</h3>
-        <p className="text-gray-600 text-sm text-center mb-4">
-          This username will be used to identify you. It must be unique.<br />
-          You will share it with the Captain after payment.
-        </p>
-        <input
-          type="text"
-          value={inputName}
-          onChange={handleChange}
-          placeholder="e.g., aviator_jane"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          autoFocus
-          disabled={checking}
-        />
-        {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
-        <button
-          onClick={handleSubmit}
-          disabled={checking}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition disabled:opacity-50"
-        >
-          {checking ? 'Checking...' : 'Continue'}
-        </button>
-        {/* Subtle note – not scary */}
-        <p className="text-xs text-gray-400 mt-3 text-center border-t pt-2">
-          <i className="fas fa-info-circle mr-1"></i>
-          If you don't receive approval within 24 hours, please contact support.
-        </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay" style={{ background: 'rgba(0,0,0,0.3)' }}>
+      {/* Glass card – iOS style */}
+      <div className="backdrop-blur-xl bg-white/30 rounded-3xl shadow-2xl border border-white/30 max-w-md w-full p-6 relative fade-up">
+        {/* Subtle gradient background overlay (optional) */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent pointer-events-none"></div>
+        
+        <div className="relative z-10">
+          {/* Welcome message */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/30 backdrop-blur-sm mb-3">
+              <i className="fas fa-fighter-jet text-3xl text-indigo-600"></i>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800">Welcome Aboard!</h3>
+            <p className="text-gray-600 text-sm mt-1">
+              You're about to access exclusive content. First, let's create your unique identifier.
+            </p>
+          </div>
+
+          <p className="text-gray-700 text-sm text-center mb-4">
+            Choose a username (only letters, numbers, underscores).<br />
+            You'll share this with the Captain after payment.
+          </p>
+
+          <input
+            type="text"
+            value={inputName}
+            onChange={handleChange}
+            placeholder="e.g., aviator_jane"
+            className="w-full border border-white/40 bg-white/50 backdrop-blur-sm rounded-xl px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-gray-800 placeholder-gray-500"
+            autoFocus
+            disabled={checking}
+          />
+          {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+
+          <button
+            onClick={handleSubmit}
+            disabled={checking}
+            className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50 shadow-md"
+          >
+            {checking ? (
+              <><i className="fas fa-spinner fa-pulse mr-2"></i> Checking...</>
+            ) : (
+              <><i className="fas fa-arrow-right mr-2"></i> Continue</>
+            )}
+          </button>
+
+          {/* Subtle note */}
+          <p className="text-xs text-gray-400 mt-4 text-center">
+            <i className="fas fa-info-circle mr-1"></i>
+            If you don't receive approval within 24 hours, please contact support.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -861,10 +884,7 @@ const UsernameModal = ({ onSetUsername }) => {
               </div>
             </div>
 
-            <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
-              <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
-            </div>
-          </div>
+               </div>
 
           {toastMessage && (
             <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white shadow-lg border border-gray-200 text-gray-800 px-6 py-3 rounded-full z-50 flex items-center gap-2 text-sm">
