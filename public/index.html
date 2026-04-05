@@ -237,6 +237,27 @@
       localStorage.setItem('username', name.toLowerCase());
     };
 
+    // ========== Notification dismissal helpers ==========
+    const getDismissedNotifications = (username) => {
+      const key = `dismissed_notifications_${username}`;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : [];
+    };
+
+    const dismissNotification = (username, notificationId) => {
+      const key = `dismissed_notifications_${username}`;
+      const current = getDismissedNotifications(username);
+      if (!current.includes(notificationId)) {
+        current.push(notificationId);
+        localStorage.setItem(key, JSON.stringify(current));
+      }
+    };
+
+    const clearDismissedNotifications = (username) => {
+      const key = `dismissed_notifications_${username}`;
+      localStorage.removeItem(key);
+    };
+
     // ---------- Username Modal (unchanged) ----------
     const UsernameModal = ({ onSetUsername }) => {
       const [inputName, setInputName] = useState('');
@@ -565,24 +586,27 @@
       );
     };
 
-    // ---------- Toast Notification ----------
-    const Toast = ({ message, type, onClose, title, duration = 3000 }) => {
-      useEffect(() => {
-        const timer = setTimeout(onClose, duration);
-        return () => clearTimeout(timer);
-      }, [onClose, duration]);
+    // ---------- Toast Notification (with dismiss persistence) ----------
+    const Toast = ({ message, type, onClose, title, notificationId, username }) => {
+      const handleClose = () => {
+        if (notificationId && username) {
+          dismissNotification(username, notificationId);
+        }
+        onClose();
+      };
+      
       return (
         <div className={`fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-xl flex items-start gap-2 text-sm ${type === 'success' ? 'bg-green-500 text-white' : type === 'info' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}>
           <div className="flex-1">
             {title && <div className="font-bold mb-1">{title}</div>}
             <div>{message}</div>
           </div>
-          <button onClick={onClose} className="ml-2 text-white hover:text-gray-200">×</button>
+          <button onClick={handleClose} className="ml-2 text-white hover:text-gray-200">×</button>
         </div>
       );
     };
 
-    // ---------- Dashboard (username‑based) with robust tip flow ----------
+    // ---------- Dashboard (username‑based) with persistent notification dismissal ----------
     const Dashboard = ({ paymentMethod, onLogout }) => {
       const [activeTab, setActiveTab] = useState("connect");
       const [unlockedLinks, setUnlockedLinks] = useState([]);
@@ -590,8 +614,6 @@
       const [showPaymentModal, setShowPaymentModal] = useState(false);
       const [toast, setToast] = useState(null);
       const [loadingApprovals, setLoadingApprovals] = useState(true);
-      const [notification, setNotification] = useState(null);
-      const [shownNotifications, setShownNotifications] = useState({});
       
       // Tip flow states
       const [showTipMethodSelector, setShowTipMethodSelector] = useState(false);
@@ -608,15 +630,22 @@
           const approvedNames = data[myUsername] || [];
           const unlockedIds = approvedNames.map(name => SOCIAL_LINKS.find(l => l.name === name)?.id).filter(Boolean);
           setUnlockedLinks(unlockedIds);
+          
+          // Handle notifications with dismissal check
           if (data.notifications && data.notifications[myUsername]) {
             const notif = data.notifications[myUsername];
-            const notifKey = notif.timestamp ? `${myUsername}-${notif.timestamp}` : `${myUsername}-${notif.message}`;
-            if (!shownNotifications[notifKey]) {
-              setNotification(notif);
-              setShownNotifications(prev => ({ ...prev, [notifKey]: true }));
+            const notificationId = notif.timestamp ? `${myUsername}-${notif.timestamp}` : `${myUsername}-${notif.message}`;
+            const dismissed = getDismissedNotifications(myUsername);
+            if (!dismissed.includes(notificationId)) {
+              setToast({
+                message: notif.message,
+                type: 'info',
+                title: notif.title || '📢 Special Announcement',
+                duration: 10000,
+                notificationId: notificationId,
+                username: myUsername
+              });
             }
-          } else {
-            setNotification(null);
           }
         } catch (err) {
           console.warn("Could not fetch approvals, using localStorage fallback.");
@@ -626,23 +655,6 @@
           setLoadingApprovals(false);
         }
       };
-
-      useEffect(() => {
-        if (notification) {
-          setToast({
-            message: notification.message,
-            type: 'info',
-            title: notification.title || '📢 Special Announcement',
-            duration: 10000
-          });
-        }
-      }, [notification]);
-
-      useEffect(() => {
-        if (!loadingApprovals) {
-          localStorage.setItem(`unlocked_links_${paymentMethod.name}`, JSON.stringify(unlockedLinks));
-        }
-      }, [unlockedLinks, paymentMethod, loadingApprovals]);
 
       useEffect(() => {
         fetchApprovals();
@@ -699,7 +711,17 @@
 
       return (
         <div className="min-h-screen">
-          {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} title={toast.title} duration={toast.duration} />}
+          {toast && (
+            <Toast 
+              message={toast.message} 
+              type={toast.type} 
+              onClose={() => setToast(null)} 
+              title={toast.title} 
+              notificationId={toast.notificationId}
+              username={toast.username}
+              duration={toast.duration}
+            />
+          )}
           {showPaymentModal && selectedLink && (
             <PaymentModal
               link={selectedLink}
@@ -948,6 +970,10 @@
       };
 
       const handlePayment = (method) => {
+        // Clear dismissed notifications for this user when a new subscription starts
+        if (username) {
+          clearDismissedNotifications(username);
+        }
         setSelectedMethod(method);
         localStorage.setItem('selected_payment_method', JSON.stringify(method));
         localStorage.setItem('access_granted', 'true');
