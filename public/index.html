@@ -20,43 +20,34 @@
         opacity: 0;
         transform: translateY(20px);
       }
-
       100% {
         opacity: 1;
         transform: translateY(0);
       }
     }
-
     @keyframes fadeSlideIn {
       0% {
         opacity: 0;
         transform: translateX(-10px);
       }
-
       100% {
         opacity: 1;
         transform: translateX(0);
       }
     }
-
     @keyframes gentlePulse {
-
-      0%,
-      100% {
+      0%, 100% {
         transform: scale(1);
       }
-
       50% {
         transform: scale(1.02);
       }
     }
-
     @keyframes floatGlow {
       0% {
         transform: translateY(0px);
         opacity: 0.7;
       }
-
       100% {
         transform: translateY(-8px);
         opacity: 1;
@@ -66,15 +57,12 @@
     .fade-up {
       animation: fadeSlideUp 0.5s ease-out forwards;
     }
-
     .fade-in {
       animation: fadeSlideIn 0.4s ease-out forwards;
     }
-
     .animate-float {
       animation: floatGlow 3s infinite alternate ease-in-out;
     }
-
     .animate-pulse-soft {
       animation: gentlePulse 2s infinite;
     }
@@ -138,11 +126,9 @@
     ::-webkit-scrollbar {
       width: 8px;
     }
-
     ::-webkit-scrollbar-track {
       background: #eef2ff;
     }
-
     ::-webkit-scrollbar-thumb {
       background: #6366f1;
       border-radius: 10px;
@@ -154,49 +140,40 @@
       background: white;
       border: 1px solid #e2e8f0;
     }
-
     .payment-card:hover {
       transform: scale(1.02);
       background: #f8fafc;
       border-color: #6366f1;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
-
     .social-link-card {
       transition: all 0.2s ease;
     }
-
     .social-link-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
     }
-
     .modal-overlay {
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(4px);
     }
-
     .btn-primary {
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
       transition: all 0.2s;
     }
-
     .btn-primary:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
     }
-
     .tabs-container {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
-
     .tab-button {
       transition: all 0.2s;
     }
-
     .tab-button.active {
       background: white;
       color: #6366f1;
@@ -226,7 +203,7 @@
     const COCKPIT_BANNER = "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=500&fit=crop"; // Sunset airplane
     const PODCAST_COVER = "https://images.unsplash.com/photo-1559825481-12a05cc00344?w=800&h=400&fit=crop";
 
-    // ========== PAYMENT METHODS (updated addresses) ==========
+    // ========== PAYMENT METHODS ==========
     const PAYMENT_METHODS = [
       { name: "CashApp", icon: "fab fa-cashapp", color: "text-green-600", tag: "$CaptainPilot", amount: "12.99" },
       { name: "PayPal", icon: "fab fa-paypal", color: "text-blue-600", tag: "captain@paypal.me", amount: "12.99" },
@@ -239,7 +216,6 @@
     // ========== SOCIAL LINKS ==========
     const SOCIAL_LINKS = [
       { id: 1, name: "Instagram", icon: "fab fa-instagram", url: "https://www.instagram.com/goldenhourceo?igsh=NTc4MTIwNjQ2YQ%3D%3D&utm_source=qr", actualUsername: "goldenhourceo", price: "12.99" },
-      // { id: 2, name: "TikTok", icon: "fab fa-tiktok", url: "https://tiktok.com/@", actualUsername: "captain.pilot", price: "12.99" },
       { id: 3, name: "WhatsApp", icon: "fab fa-whatsapp", url: "https://wa.me/13055239916", actualUsername: "goldenhourceo", price: "12.99" },
       { id: 4, name: "Telegram", icon: "fab fa-telegram", url: "https://t.me/", actualUsername: "captain_aero", price: "12.99" }
     ];
@@ -251,22 +227,101 @@
       { title: "🎙️ Flying Across Atlantic: Stories", duration: "1h 12min", date: "Jan 2025" }
     ];
 
-    // ---------- Helper: get unique device ID ----------
-    const getDeviceId = () => {
-      let id = localStorage.getItem('device_id');
-      if (!id) {
-        id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem('device_id', id);
-      }
-      return id;
+    // ---------- Helper: get/set username (always lowercase) ----------
+    const getUsername = () => {
+      let username = localStorage.getItem('username');
+      return username ? username.toLowerCase() : null;
     };
 
-    // ---------- Payment Modal (updated to show network for crypto) ----------
+    const setUsername = (name) => {
+      localStorage.setItem('username', name.toLowerCase());
+    };
+
+    // ---------- Username Modal (with discreet note) ----------
+const UsernameModal = ({ onSetUsername }) => {
+  const [inputName, setInputName] = useState('');
+  const [error, setError] = useState('');
+  const [checking, setChecking] = useState(false);
+
+  const checkUsernameExists = async (name) => {
+    try {
+      const res = await fetch(APPROVED_JSON_URL + "?t=" + Date.now());
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.hasOwnProperty(name.toLowerCase());
+    } catch (err) {
+      console.warn("Could not fetch existing usernames, assuming free.");
+      return false;
+    }
+  };
+
+  const handleSubmit = async () => {
+    const trimmed = inputName.trim().toLowerCase();
+    if (trimmed.length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
+      setError('Only letters, numbers, and underscores allowed');
+      return;
+    }
+    setChecking(true);
+    const exists = await checkUsernameExists(trimmed);
+    setChecking(false);
+    if (exists) {
+      setError('Username already taken. Please choose another.');
+      return;
+    }
+    setUsername(trimmed);
+    onSetUsername(trimmed);
+  };
+
+  const handleChange = (e) => {
+    setInputName(e.target.value.toLowerCase());
+    setError('');
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative fade-up">
+        <h3 className="text-2xl font-bold text-gray-800 mb-2 text-center">Choose a Username</h3>
+        <p className="text-gray-600 text-sm text-center mb-4">
+          This username will be used to identify you. It must be unique.<br />
+          You will share it with the Captain after payment.
+        </p>
+        <input
+          type="text"
+          value={inputName}
+          onChange={handleChange}
+          placeholder="e.g., aviator_jane"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          autoFocus
+          disabled={checking}
+        />
+        {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+        <button
+          onClick={handleSubmit}
+          disabled={checking}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition disabled:opacity-50"
+        >
+          {checking ? 'Checking...' : 'Continue'}
+        </button>
+        {/* Subtle note – not scary */}
+        <p className="text-xs text-gray-400 mt-3 text-center border-t pt-2">
+          <i className="fas fa-info-circle mr-1"></i>
+          If you don't receive approval within 24 hours, please contact support.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+    // ---------- Payment Modal (unchanged, shows username in lowercase) ----------
     const PaymentModal = ({ link, paymentMethod, onClose }) => {
       const [showPaymentDetails, setShowPaymentDetails] = useState(false);
       const [copied, setCopied] = useState(false);
-      const [deviceIdCopied, setDeviceIdCopied] = useState(false);
-      const deviceId = getDeviceId();
+      const [usernameCopied, setUsernameCopied] = useState(false);
+      const username = getUsername();
 
       const handleCopyTag = () => {
         navigator.clipboard.writeText(paymentMethod.tag);
@@ -274,10 +329,10 @@
         setTimeout(() => setCopied(false), 2000);
       };
 
-      const handleCopyDeviceId = () => {
-        navigator.clipboard.writeText(deviceId);
-        setDeviceIdCopied(true);
-        setTimeout(() => setDeviceIdCopied(false), 2000);
+      const handleCopyUsername = () => {
+        navigator.clipboard.writeText(username);
+        setUsernameCopied(true);
+        setTimeout(() => setUsernameCopied(false), 2000);
       };
 
       const amountDisplay = paymentMethod.isCrypto ? paymentMethod.amount : `$${link.price}`;
@@ -344,17 +399,17 @@
               <ol className="text-[11px] sm:text-xs text-gray-700 space-y-1 list-decimal ml-4">
                 <li>{instructionText}</li>
                 <li>
-                  <span className="font-medium">Copy Device ID:</span>
+                  <span className="font-medium">Copy your Username:</span>
                   <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-                    <code className="bg-white px-1.5 py-0.5 rounded text-[11px] font-mono break-all flex-1 min-w-[120px]">{deviceId}</code>
-                    <button onClick={handleCopyDeviceId} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs whitespace-nowrap">
-                      {deviceIdCopied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
-                      {deviceIdCopied ? " Copied" : " Copy"}
+                    <code className="bg-white px-1.5 py-0.5 rounded text-[11px] font-mono break-all flex-1 min-w-[120px]">{username}</code>
+                    <button onClick={handleCopyUsername} className="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded text-xs whitespace-nowrap">
+                      {usernameCopied ? <i className="fas fa-check text-green-600"></i> : <i className="fas fa-copy"></i>}
+                      {usernameCopied ? " Copied" : " Copy"}
                     </button>
                   </div>
                 </li>
                 <li>Take a screenshot of payment confirmation.</li>
-                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br />Device ID, Payment screenshot, and link name (<strong>{link.name}</strong>).</li>
+                <li>Email to <strong>{SUPPORT_EMAIL}</strong> with:<br />Username, Payment screenshot, and link name (<strong>{link.name}</strong>).</li>
                 <li>Approval within <strong>12 hours</strong>.</li>
               </ol>
             </div>
@@ -373,7 +428,7 @@
       );
     };
 
-    // ---------- Toast Notification (now supports title and longer duration) ----------
+    // ---------- Toast Notification ----------
     const Toast = ({ message, type, onClose, title, duration = 3000 }) => {
       useEffect(() => {
         const timer = setTimeout(onClose, duration);
@@ -390,7 +445,7 @@
       );
     };
 
-    // ---------- Dashboard with notifications ----------
+    // ---------- Dashboard (username‑based, lowercase) ----------
     const Dashboard = ({ paymentMethod, onLogout }) => {
       const [activeTab, setActiveTab] = useState("connect");
       const [unlockedLinks, setUnlockedLinks] = useState([]);
@@ -406,18 +461,17 @@
           const res = await fetch(APPROVED_JSON_URL + "?t=" + Date.now());
           if (!res.ok) throw new Error();
           const data = await res.json();
-          const myId = getDeviceId();
+          const myUsername = getUsername();
 
-          // Unlock links
-          const approvedNames = data[myId] || [];
+          // Unlock links – data keys are expected to be lowercase (but we'll lowercase the lookup)
+          const approvedNames = data[myUsername] || [];
           const unlockedIds = approvedNames.map(name => SOCIAL_LINKS.find(l => l.name === name)?.id).filter(Boolean);
           setUnlockedLinks(unlockedIds);
 
-          // Check for notifications
-          if (data.notifications && data.notifications[myId]) {
-            const notif = data.notifications[myId];
-            // Use a unique key based on timestamp or message to avoid duplicates
-            const notifKey = notif.timestamp ? `${myId}-${notif.timestamp}` : `${myId}-${notif.message}`;
+          // Notifications – also case‑insensitive
+          if (data.notifications && data.notifications[myUsername]) {
+            const notif = data.notifications[myUsername];
+            const notifKey = notif.timestamp ? `${myUsername}-${notif.timestamp}` : `${myUsername}-${notif.message}`;
             if (!shownNotifications[notifKey]) {
               setNotification(notif);
               setShownNotifications(prev => ({ ...prev, [notifKey]: true }));
@@ -434,14 +488,13 @@
         }
       };
 
-      // Show notification as a toast when it's set
       useEffect(() => {
         if (notification) {
           setToast({
             message: notification.message,
             type: 'info',
             title: notification.title || '📢 Special Announcement',
-            duration: 10000 // 10 seconds
+            duration: 10000
           });
         }
       }, [notification]);
@@ -562,7 +615,6 @@
                   <p className="text-gray-600 mb-6">
                     Each link costs <span className="text-indigo-600 font-bold">${SOCIAL_LINKS[0]?.price}</span>. Follow the instructions after clicking a link.
                   </p>
-                  {/* Updated grid: 1 column on small, 2 on medium, 3 on large, centered */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center mx-auto w-full max-w-4xl">
                     {SOCIAL_LINKS.map(link => {
                       const isUnlocked = unlockedLinks.includes(link.id);
@@ -604,13 +656,13 @@
                       <ul className="text-xs text-gray-600 space-y-1 ml-4 list-disc">
                         <li>Click a locked link to see payment details.</li>
                         <li>Send the exact amount to the provided tag/address.</li>
-                        <li>Copy your unique Device ID (displayed in the modal).</li>
+                        <li>Copy your unique Username (displayed in the modal).</li>
                         <li>Take a screenshot of your payment.</li>
-                        <li>Email both the Device ID and the screenshot to {SUPPORT_EMAIL} with the link name.</li>
-                        <li>Your device will be approved within 12 hours.</li>
+                        <li>Email both the Username and the screenshot to {SUPPORT_EMAIL} with the link name.</li>
+                        <li>Your account will be approved within 12 hours.</li>
                       </ul>
                       <p className="text-xs text-gray-500 mt-3">
-                        <i className="fas fa-id-card mr-1"></i> Your Device ID: <span className="font-mono text-xs break-all">{getDeviceId()}</span>
+                        <i className="fas fa-id-card mr-1"></i> Your Username: <span className="font-mono text-xs break-all">{getUsername()}</span>
                       </p>
                     </div>
                   </div>
@@ -668,7 +720,7 @@
                     <h3 className="text-2xl font-bold text-gray-800">Need Help?</h3>
                     <p className="text-gray-600 text-sm">Contact support: <strong>{SUPPORT_EMAIL}</strong></p>
                     <div className="mt-4 p-3 bg-gray-50/70 rounded-lg">
-                      <p className="text-xs text-gray-500">After sending payment, email your Device ID and payment screenshot to the address above. We'll approve your device within 12 hours.</p>
+                      <p className="text-xs text-gray-500">After sending payment, email your Username and payment screenshot to the address above. We'll approve your device within 12 hours.</p>
                     </div>
                   </div>
                 </div>
@@ -692,6 +744,8 @@
       const [selectedMethod, setSelectedMethod] = useState(null);
       const [toastMessage, setToastMessage] = useState(null);
       const [showAdmin, setShowAdmin] = useState(false);
+      const [username, setUsernameState] = useState(getUsername());
+      const [showUsernameModal, setShowUsernameModal] = useState(!username);
 
       useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -701,11 +755,11 @@
       useEffect(() => {
         const savedMethod = localStorage.getItem('selected_payment_method');
         const savedAccess = localStorage.getItem('access_granted');
-        if (savedMethod && savedAccess === 'true') {
+        if (savedMethod && savedAccess === 'true' && username) {
           setSelectedMethod(JSON.parse(savedMethod));
           setAccessGranted(true);
         }
-      }, []);
+      }, [username]);
 
       const showToast = (msg) => {
         setToastMessage(msg);
@@ -717,7 +771,7 @@
         localStorage.setItem('selected_payment_method', JSON.stringify(method));
         localStorage.setItem('access_granted', 'true');
         setAccessGranted(true);
-        showToast(`✅ Welcome! Click any social link to unlock.`);
+        showToast(`✅ Welcome, ${username}! Click any social link to unlock.`);
       };
 
       const handleLogout = () => {
@@ -729,13 +783,42 @@
         showToast("👋 Logged out successfully.");
       };
 
+      const handleSetUsername = (name) => {
+        setUsernameState(name);
+        setShowUsernameModal(false);
+      };
+
+      if (!username || showUsernameModal) {
+        return <UsernameModal onSetUsername={handleSetUsername} />;
+      }
+
       if (accessGranted && selectedMethod) {
         return <Dashboard paymentMethod={selectedMethod} onLogout={handleLogout} />;
       }
 
       return (
         <>
-          {showAdmin && <AdminPanel onClose={() => setShowAdmin(false)} />}
+          {showAdmin && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+              <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative fade-up">
+                <button onClick={() => setShowAdmin(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                  <i className="fas fa-times text-xl"></i>
+                </button>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Admin Panel</h3>
+                <p className="text-gray-600 text-sm mb-2">Your Username:</p>
+                <div className="bg-gray-100 p-3 rounded-lg font-mono text-sm break-all mb-4">{username}</div>
+                <button
+                  onClick={() => navigator.clipboard.writeText(username)}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition"
+                >
+                  Copy Username
+                </button>
+                <p className="text-xs text-gray-400 mt-3">
+                  To approve a user, add their username to <code>approved.json</code> with the list of unlocked links.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16 md:py-24">
             <div className="max-w-4xl w-full glass-card p-8 md:p-12 fade-up">
               <div className="flex flex-col items-center text-center">
@@ -778,6 +861,9 @@
               </div>
             </div>
 
+            <div className="fixed bottom-4 left-0 right-0 text-center text-xs text-gray-400">
+              <a href="?admin=captain123" className="hover:text-indigo-500">🔑 Admin Access</a>
+            </div>
           </div>
 
           {toastMessage && (

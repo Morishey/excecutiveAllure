@@ -1,16 +1,6 @@
 {
-  "6tkcgyg83g6mwqn5h8ozn": ["Instagram"],
-  "74048d9b-4651-498b-b33b-53f78ac44a32": ["Instagram"],
-  "db4e61f7-a2cd-4291-9f62-517c50daec51": ["WhatsApp"],
-
-  
+  "morishey": ["WhatsApp"],
   "notifications": {
-    "db4e61f7-a2cd-4291-9f62-517c50daec51": {
-      "title": "🎉 Congratulations!",
-      "message": "you have unlocked the WhatsApp badge!",
-      "timestamp": "2025-04-01T12:00:00Z"
-    }
+    "morishey": { "title": "Welcome!", "message": "Your link is now unlocked." }
   }
-
- 
 }
